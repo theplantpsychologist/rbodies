@@ -11,9 +11,10 @@ wheels/
 
 # bulky data files
 *.cine
-*.csv
+# *.csv
 *.zip
 *.tiff
+*.mp4
 
 # latex stuff
 ## Core latex/pdflatex auxiliary files:
