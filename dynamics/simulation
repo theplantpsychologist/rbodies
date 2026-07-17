@@ -1,0 +1,184 @@
+import numpy as np
+from scipy.integrate import solve_ivp
+from scipy.interpolate import interp1d
+import pyvista as pv
+
+# =========================================================================
+# 0. Output Settings
+# =========================================================================
+SAVE_VIDEO_FILE = True          # Set to True to save MP4, False for Interactive UI
+VIDEO_FILENAME = "helix_uncoil.mp4"
+FPS = 30                        # Playback and render frame rate
+PLAYBACK_SPEED = 1
+
+# =========================================================================
+# 1. System Constants & Material Parameters
+# =========================================================================
+E = 2e9             # Young's Modulus (Pa)
+th = 0.01          # Thickness (m)
+nu = 0.3            # Poisson's ratio
+D = (E * th**3) / (12 * (1 - nu**2)) # Bending Stiffness
+rho = 100          # Density (kg/m^3)
+
+r0 = 1            # Natural inner radius (m)
+phi0 = np.pi / 4    # Natural helix angle (rad)
+L = 100.0           # Total arc length of the curve (m)
+W = 50             # Width of the tape/shell (m)
+A = L * W           # Total area
+alpha = 10*th / (2 * np.pi) # Radial growth per radian
+
+# --- Dynamic Simulation Parameters ---
+M_tot = rho * A * th
+
+# Geometrically derived lumped generalized masses
+m_r = M_tot                  # Effective mass for radial expansion (kg)
+m_phi = M_tot * (L**2) / 3.0 # Effective inertia for axial extension (kg*m^2)
+
+# Because the masses are now much larger (physically scaled), 
+# you may need to increase the damping coefficient to maintain stability.
+c_r = 1          # Viscous damping for radial motion
+c_phi = 0.001       # Viscous damping for angular motion
+
+# Initial Conditions: [r, phi, r_dot, phi_dot]
+y0 = [1, 0.0, 0.0, 0.0] 
+t_span = (0.0, 15.0) 
+
+# =========================================================================
+# 2. ODE Definition
+# =========================================================================
+def helix_dynamics(t, y, D, A, nu, r0, phi0, m_r, m_phi, c_r, c_phi):
+    r, phi, r_dot, phi_dot = y
+    r = max(r, 0.01) 
+    
+    C = A * (D / 2.0)
+    
+    dU_dr = C * ( 2*(1/r - 1/r0)*(-1/r**2) - 2*(1-nu)*(1/(r**2 * r0))*np.sin(phi - phi0)**2 )
+    dU_dphi = C * ( 2*(1-nu)*(1/(r * r0))*2*np.sin(phi - phi0)*np.cos(phi - phi0) )
+    
+    r_ddot = (-c_r * r_dot - dU_dr) / m_r
+    phi_ddot = (-c_phi * phi_dot - dU_dphi) / m_phi
+    
+    return [r_dot, phi_dot, r_ddot, phi_ddot]
+
+# =========================================================================
+# 3. Solve & Interpolate
+# =========================================================================
+print("Simulating dynamics...")
+sol = solve_ivp(
+    fun=lambda t, y: helix_dynamics(t, y, D, A, nu, r0, phi0, m_r, m_phi, c_r, c_phi),
+    t_span=t_span,
+    y0=y0,
+    method='RK45',
+    rtol=1e-4,
+    atol=1e-4
+)
+
+# # Resample to uniform time grid for fixed framerate playback
+# t_realtime = np.arange(t_span[0], t_span[1], 1/FPS)
+# interp_func = interp1d(sol.t, sol.y, axis=1, kind='linear')
+# y_realtime = interp_func(t_realtime)
+# num_frames = len(t_realtime)
+
+# Calculate how many frames are needed for the slow-motion effect
+sim_duration = t_span[1] - t_span[0]
+video_duration = sim_duration / PLAYBACK_SPEED
+num_frames = int(video_duration * FPS)
+
+# Resample simulation over the expanded number of frames
+t_realtime = np.arange(t_span[0], t_span[1], (t_span[1] - t_span[0]) / num_frames)
+interp_func = interp1d(sol.t, sol.y, axis=1, kind='linear')
+y_realtime = interp_func(t_realtime)
+# =========================================================================
+# 4. Pre-compute Geometry & Bounding Box
+# =========================================================================
+print("Pre-computing 3D ribbon geometry...")
+s = np.linspace(0, L, 500)
+nx = len(s)
+
+frames_grid_points = []
+
+for i in range(num_frames):
+    r_curr = max(y_realtime[0, i], 0.01)
+    phi_curr = y_realtime[1, i]
+    
+    # Base Curve Coordinates
+    r_s = np.sqrt(r_curr**2 + 2 * alpha * np.cos(phi_curr) * s)
+    theta_s = (r_s - r_curr) / alpha
+    
+    X = r_s * np.cos(theta_s)
+    Y = r_s * np.sin(theta_s)
+    Z = s * np.sin(phi_curr)
+    pts_bottom = np.column_stack((X, Y, Z))
+    
+    # Projected Curve Coordinates
+    Z_top = Z + (W / np.cos(phi_curr))
+    pts_top = np.column_stack((X, Y, Z_top))
+    
+    frames_grid_points.append(np.vstack((pts_bottom, pts_top)))
+
+# Calculate absolute simulation bounds
+r_max_sim = np.max(y_realtime[0, :])
+phi_max_sim = np.max(y_realtime[1, :])
+phi_min_sim = np.min(y_realtime[1, :])
+
+R_max = np.sqrt(r_max_sim**2 + 2 * alpha * L)
+x_lim = [-R_max, R_max]
+y_lim = [-R_max, R_max]
+z_min = max(0, L * np.sin(phi_min_sim))
+z_max = 5 * L * np.sin(phi_max_sim) + (W / np.cos(phi_max_sim))
+
+pad = 0.1
+
+# =========================================================================
+# 5. Dynamic Window Resolution
+# =========================================================================
+# Calculate the physical aspect ratio of the bounding box
+phys_width = (x_lim[1] - x_lim[0]) * pad
+phys_height = (z_max - z_min) * pad
+
+# Handle edge case if height is essentially zero (e.g., flat coil)
+if phys_height < 0.1: 
+    phys_height = phys_width 
+
+aspect_ratio = phys_width / phys_height
+
+# Set target video height (e.g., 1080p for high-res portrait)
+target_h = 1080
+target_w = int(target_h * aspect_ratio)
+
+# Constrain the width so it doesn't get ridiculously skinny or wide
+target_w = max(400, min(target_w, 1920))
+dynamic_window_size = [target_w, target_h]
+
+print(f"Dynamic Resolution set to: {target_w}x{target_h}")
+
+# =========================================================================
+# 6. PyVista Rendering
+# =========================================================================
+ribbon_mesh = pv.StructuredGrid()
+ribbon_mesh.dimensions = (nx, 2, 1)
+ribbon_mesh.points = frames_grid_points[0]
+
+bounds_mesh = pv.Box(bounds=(x_lim[0]*pad, x_lim[1]*pad, 
+                             y_lim[0]*pad, y_lim[1]*pad, 
+                             z_min*pad, z_max*pad))
+
+print(f"Rendering video to {VIDEO_FILENAME}...")
+plotter = pv.Plotter(off_screen=True, window_size=dynamic_window_size)
+plotter.set_background("white")
+plotter.add_mesh(bounds_mesh, color="white", opacity=0.0)
+plotter.add_mesh(ribbon_mesh, color="blue", opacity=0.1, show_edges=False)
+
+state_label = plotter.add_text("", position=(0.02, 0.9), color="black", font_size=12)
+plotter.view_isometric()
+
+plotter.open_movie(VIDEO_FILENAME, framerate=FPS)
+
+for i in range(num_frames):
+    ribbon_mesh.points = frames_grid_points[i]
+    plotter.add_text(f"Time: {t_realtime[i]:.2f} s\nr: {y_realtime[0, i]:.2f} m\nphi: {y_realtime[1, i]:.2f} rad", 
+                     position=(0.02, 0.9), color="black", font_size=12, name=state_label.name)
+    plotter.write_frame()
+    
+plotter.close()
+print("Video saved successfully.")

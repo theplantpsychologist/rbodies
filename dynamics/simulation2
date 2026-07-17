@@ -1,0 +1,264 @@
+import numpy as np
+from scipy.integrate import solve_ivp
+from scipy.interpolate import interp1d
+import pyvista as pv
+
+# =========================================================================
+# 0. Output Settings
+# =========================================================================
+SAVE_VIDEO_FILE = True          
+VIDEO_FILENAME = "helix_uncoil_friction.mp4"
+FPS = 30                        
+PLAYBACK_SPEED = 0.20           
+
+# =========================================================================
+# 1. System Constants & Material Parameters
+# =========================================================================
+rho = 6450.0        # Density of Nitinol (kg/m^3)
+E = 2e9             # Young's Modulus (Pa)
+th = 0.001          # Thickness (m)
+nu = 0.3            # Poisson's ratio
+D = (E * th**3) / (12 * (1 - nu**2)) # Bending Stiffness
+
+r0 = 1.0            # Natural inner radius (m)
+phi0 = np.pi / 4    # Natural helix angle (rad)
+L = 10.0            # Total arc length of the curve (m)
+W = 0.1             # Width of the tape/shell (m)
+A = L * W           # Total area
+alpha = th / (2 * np.pi) # Radial growth per radian
+
+# --- Dynamic Simulation Parameters ---
+M_tot = rho * A * th
+m_r = M_tot                  
+m_phi = M_tot * (L**2) / 3.0 
+
+# New: First-Principles Coulomb Friction Coefficient
+mu = 0.15           # Surface friction coefficient between layers
+
+# Initial Conditions
+y0 = [1.0, 0.0, 0.0, 0.0] 
+t_span = (0.0, 1.0) 
+
+# =========================================================================
+# 2. Friction Power Engine (Virtual Work)
+# =========================================================================
+def get_friction_power(r, phi, r_dot, phi_dot, D, r0, alpha, L, W, mu, v0=1e-4):
+    """
+    Calculates total power dissipated by internal dry friction over the spool.
+    v0 is a regularizing term to prevent ODE solver singularities at v=0.
+    """
+    # Discretize the arc length
+    s = np.linspace(0, L, 50)
+    ds = s[1] - s[0]
+
+    # --- 1. Kinematics (Relative Sliding Velocity) ---
+    r_s = np.sqrt(r**2 + 2 * alpha * s * np.cos(phi))
+    r_s_dot = (r * r_dot - alpha * s * np.sin(phi) * phi_dot) / r_s
+    
+    theta = (r_s - r) / alpha
+    theta_dot = (r_s_dot - r_dot) / alpha
+    
+    X_dot = r_s_dot * np.cos(theta) - r_s * theta_dot * np.sin(theta)
+    Y_dot = r_s_dot * np.sin(theta) + r_s * theta_dot * np.cos(theta)
+    Z_dot = s * np.cos(phi) * phi_dot
+    
+    # 3D Velocity vector field V(s)
+    V = np.vstack((X_dot, Y_dot, Z_dot))
+    
+    # Gradient of velocity with respect to arc length
+    dV_ds = np.gradient(V, ds, axis=1)
+    
+    # Convert to relative velocity between adjacent overlapping layers
+    v_rel = dV_ds * (2 * np.pi * r_s / np.cos(phi))
+    
+    # Regularized magnitude for numerical stability
+    v_rel_mag = np.sqrt(np.sum(v_rel**2, axis=0) + v0**2) - v0
+
+    # --- 2. Confining Pressure ---
+    # P_net is the driving pressure per unit area from local bending strain
+    P_net = D * (1/r_s - 1/r0) / (r_s**2)
+    
+    # Pressure gradient per unit arc length
+    dP_ds = P_net * (np.cos(phi) / (2 * np.pi * r_s))
+    
+    # Integrate from outer edge inward to get cumulative pressure P(s)
+    # Using reverse cumulative rectangular integration
+    P_cum = np.abs(np.flip(np.cumsum(np.flip(dP_ds))) * ds)
+
+    # --- 3. Dissipated Power ---
+    # Power = force * velocity = (mu * P * Area) * v_rel
+    P_diss_density = mu * P_cum * v_rel_mag * W
+    
+    # Integrate power over the length of the spool
+    return np.trapezoid(P_diss_density, s)
+
+# =========================================================================
+# 3. ODE Definition
+# =========================================================================
+def helix_dynamics(t, y, D, A, nu, r0, phi0, m_r, m_phi, alpha, L, W, mu):
+    r, phi, r_dot, phi_dot = y
+    r = max(r, 0.01) 
+    
+    C = A * (D / 2.0)
+    
+    # --- Elastic Restoring Forces ---
+    dU_dr = C * ( 2*(1/r - 1/r0)*(-1/r**2) - 2*(1-nu)*(1/(r**2 * r0))*np.sin(phi - phi0)**2 )
+    dU_dphi = C * ( 2*(1-nu)*(1/(r * r0))*2*np.sin(phi - phi0)*np.cos(phi - phi0) )
+    
+    # --- Generalized Friction Forces (Finite Difference of Power) ---
+    # Perturb velocities to extract the gradients of dissipated power
+    eps = 1e-5
+    P0 = get_friction_power(r, phi, r_dot, phi_dot, D, r0, alpha, L, W, mu)
+    P_r_plus = get_friction_power(r, phi, r_dot + eps, phi_dot, D, r0, alpha, L, W, mu)
+    P_phi_plus = get_friction_power(r, phi, r_dot, phi_dot + eps, D, r0, alpha, L, W, mu)
+    
+    # Generalized non-conservative forces Q = - dP/dq_dot
+    Q_r_fric = -(P_r_plus - P0) / eps
+    Q_phi_fric = -(P_phi_plus - P0) / eps
+    
+    # --- Equations of Motion ---
+    r_ddot = (-dU_dr + Q_r_fric) / m_r
+    phi_ddot = (-dU_dphi + Q_phi_fric) / m_phi
+    
+    return [r_dot, phi_dot, r_ddot, phi_ddot]
+
+# =========================================================================
+# 4. Solve & Slow-Motion Interpolation
+# =========================================================================
+print("Simulating dynamics (this may take a moment due to stiff friction equations)...")
+sol = solve_ivp(
+    fun=lambda t, y: helix_dynamics(t, y, D, A, nu, r0, phi0, m_r, m_phi, alpha, L, W, mu),
+    t_span=t_span,
+    y0=y0,
+    method='Radau', # Required for highly stiff ODEs like dry friction
+    rtol=1e-3,
+    atol=1e-3
+)
+
+sim_duration = t_span[1] - t_span[0]
+video_duration = sim_duration / PLAYBACK_SPEED
+num_frames = int(video_duration * FPS)
+
+t_realtime = np.linspace(t_span[0], t_span[1], num_frames)
+interp_func = interp1d(sol.t, sol.y, axis=1, kind='linear')
+y_realtime = interp_func(t_realtime)
+
+# =========================================================================
+# 5. Pre-compute Geometry & Bounding Box
+# =========================================================================
+print("Pre-computing 3D ribbon geometry...")
+s = np.linspace(0, L, 500)
+nx = len(s)
+
+frames_grid_points = []
+
+for i in range(num_frames):
+    r_curr = max(y_realtime[0, i], 0.01)
+    phi_curr = y_realtime[1, i]
+    
+    r_s = np.sqrt(r_curr**2 + 2 * alpha * np.cos(phi_curr) * s)
+    theta_s = (r_s - r_curr) / alpha
+    
+    X = r_s * np.cos(theta_s)
+    Y = r_s * np.sin(theta_s)
+    Z = s * np.sin(phi_curr)
+    pts_bottom = np.column_stack((X, Y, Z))
+    
+    Z_top = Z + (W / np.cos(phi_curr))
+    pts_top = np.column_stack((X, Y, Z_top))
+    
+    frames_grid_points.append(np.vstack((pts_bottom, pts_top)))
+
+# Bounds
+r_max_sim = np.max(y_realtime[0, :])
+phi_max_sim = np.max(y_realtime[1, :])
+phi_min_sim = np.min(y_realtime[1, :])
+
+R_max = np.sqrt(r_max_sim**2 + 2 * alpha * L)
+x_lim = [-R_max, R_max]
+y_lim = [-R_max, R_max]
+z_min = max(0, L * np.sin(phi_min_sim))
+z_max = L * np.sin(phi_max_sim) + (W / np.cos(phi_max_sim))
+
+pad = 1.15
+
+phys_width = (x_lim[1] - x_lim[0]) * pad
+phys_height = (z_max - z_min) * pad
+if phys_height < 0.1: phys_height = phys_width 
+aspect_ratio = phys_width / phys_height
+
+target_h = 1080
+target_w = int(target_h * aspect_ratio)
+target_w = max(400, min(target_w, 1920))
+dynamic_window_size = [target_w, target_h]
+
+# =========================================================================
+# 6. PyVista Rendering
+# =========================================================================
+ribbon_mesh = pv.StructuredGrid()
+ribbon_mesh.dimensions = (nx, 2, 1)
+ribbon_mesh.points = frames_grid_points[0]
+
+bounds_mesh = pv.Box(bounds=(x_lim[0]*pad, x_lim[1]*pad, 
+                             y_lim[0]*pad, y_lim[1]*pad, 
+                             z_min*pad, z_max*pad))
+
+if SAVE_VIDEO_FILE:
+    print(f"Rendering video to {VIDEO_FILENAME}...")
+    plotter = pv.Plotter(off_screen=True, window_size=dynamic_window_size)
+else:
+    print("Launching interactive viewer...")
+    plotter = pv.Plotter(window_size=dynamic_window_size)
+
+plotter.set_background("white")
+plotter.add_mesh(bounds_mesh, color="white", opacity=0.0)
+plotter.add_mesh(ribbon_mesh, color="blue", opacity=0.7, show_edges=False)
+
+label_pos = (0.02, 0.9)
+state_label = plotter.add_text(f"Time: {t_realtime[0]:.2f} s\nr: {y_realtime[0, 0]:.2f} m\nphi: {y_realtime[1, 0]:.2f} rad", 
+                               position=label_pos, color="black", font_size=12)
+plotter.view_isometric()
+
+if SAVE_VIDEO_FILE:
+    plotter.open_movie(VIDEO_FILENAME, framerate=FPS)
+    for i in range(num_frames):
+        ribbon_mesh.points = frames_grid_points[i]
+        plotter.add_text(f"Time: {t_realtime[i]:.2f} s\nr: {y_realtime[0, i]:.2f} m\nphi: {y_realtime[1, i]:.2f} rad", 
+                         position=label_pos, color="black", font_size=12, name=state_label.name)
+        plotter.write_frame()
+    plotter.close()
+    print("Video saved successfully.")
+else:
+    current_frame = 0
+    is_playing = False
+
+    def update_frame(idx):
+        global current_frame
+        current_frame = int(np.round(idx))
+        ribbon_mesh.points = frames_grid_points[current_frame]
+        new_text = f"Time: {t_realtime[current_frame]:.2f} s\nr: {y_realtime[0, current_frame]:.2f} m\nphi: {y_realtime[1, current_frame]:.2f} rad"
+        plotter.add_text(new_text, position=label_pos, color="black", font_size=12, name=state_label.name)
+
+    def toggle_play(state):
+        global is_playing
+        is_playing = state
+
+    def auto_play():
+        global current_frame
+        if is_playing:
+            next_frame = (current_frame + 1) % num_frames
+            slider_rep.SetValue(next_frame) 
+            update_frame(next_frame)        
+            plotter.render()                
+
+    slider_widget = plotter.add_slider_widget(
+        update_frame, [0, num_frames - 1], value=0, title="Playback Frame",
+        pointa=(0.35, 0.05), pointb=(0.95, 0.05), color="black", style="modern"
+    )
+    slider_rep = slider_widget.GetRepresentation()
+    plotter.add_checkbox_button_widget(toggle_play, value=False, position=(50, 50), size=40, color_on='green', color_off='red')
+    plotter.add_text("Play / Pause", position=(100, 60), color="black", font_size=10)
+    plotter.add_callback(auto_play, interval=int(1000/FPS))
+    plotter.show_grid(color="lightgray")
+    plotter.show_axes()
+    plotter.show()

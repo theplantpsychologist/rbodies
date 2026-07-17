@@ -131,10 +131,11 @@ def extract_trapezoid_features(binary_mask):
 # ==========================================
 # 2. PROCESSING PIPELINES
 # ==========================================
-def process_video(file_path, output_csv, r, output_mp4=None, fps=1000, threshold=128, scale_factor=0.5):
+
+def compress_video(file_path, output_mp4=None, scale_factor=0.5):
     """
-    Unified Pipeline: Extracts kinematics from either a .cine or .mp4 file.
-    Applies denoising and phase unwrapping, and saves the PROCESSED data to CSV.
+    Standalone pipeline to purely compress a video (.cine or .mp4) to a lightweight .mp4.
+    Safely handles 16-bit to 8-bit conversion to prevent pixel wrapping.
     """
     if not os.path.exists(file_path):
         print(f"Error: '{file_path}' not found.")
@@ -144,8 +145,96 @@ def process_video(file_path, output_csv, r, output_mp4=None, fps=1000, threshold
     file_ext = os.path.splitext(file_path)[1].lower()
     is_cine = (file_ext == '.cine')
 
+    # Auto-generate output filename if not provided
+    if output_mp4 is None:
+        output_mp4 = file_path.rsplit('.', 1)[0] + '.mp4'
+
     print(f"Opening {file_ext.upper()} file...")
 
+    # --- 1. INITIALIZATION & METADATA ---
+    if is_cine:
+        metadata = cr.read_metadata(file_path)
+        total_frames = metadata.ImageCount
+        orig_width = metadata.ImWidth
+        orig_height = metadata.ImHeight
+        first_idx = metadata.FirstImageNo
+    else:
+        cap = cv2.VideoCapture(file_path)
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        orig_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        orig_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        first_idx = 0
+
+    new_width = int(orig_width * scale_factor)
+    new_height = int(orig_height * scale_factor)
+
+    print(f"Found {total_frames} frames ({orig_width}x{orig_height}).")
+    print(f"Compressing to {new_width}x{new_height}...")
+
+    # --- 2. VIDEO WRITER SETUP ---
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    video_writer = cv2.VideoWriter(output_mp4, fourcc, 60.0, (new_width, new_height), isColor=False)
+
+    # --- 3. COMPRESSION LOOP ---
+    for i in range(total_frames):
+        frame_data = None
+        
+        # Read Frame
+        if is_cine:
+            target_frame = first_idx + i
+            try:
+                _, images, _ = cr.read(file_path, target_frame, 1)
+                if images and len(images) > 0: 
+                    frame_data = images[0]
+            except Exception:
+                pass 
+        else:
+            ret, frame = cap.read()
+            if ret:
+                # MP4s read via OpenCV might be BGR, force to grayscale
+                if len(frame.shape) == 3:
+                    frame_data = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                else:
+                    frame_data = frame
+
+        if frame_data is None:
+            continue
+
+        # --- THE BUG FIX: 8-Bit Normalization ---
+        # Compresses the 16-bit raw array down to 8-bit so the VideoWriter doesn't choke and wrap the white pixels
+        frame_8bit = cv2.normalize(frame_data, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+
+        # Resize and Write
+        frame_resized = cv2.resize(frame_8bit, (new_width, new_height), interpolation=cv2.INTER_AREA)
+        video_writer.write(frame_resized)
+
+        if (i + 1) % 100 == 0: 
+            print(f"Compressed {i + 1}/{total_frames} frames...")
+
+    # --- 4. CLEANUP ---
+    if not is_cine:
+        cap.release()
+    video_writer.release()
+    
+    print(f"\nCompression Complete!\nSaved to: {output_mp4}")
+
+def process_video(file_path, r, output_csv = None,output_mp4=None, fps=1000, threshold=128, scale_factor=0.5):
+    """
+    Unified Pipeline: Extracts kinematics from either a .cine or .mp4 file.
+    Applies denoising and phase unwrapping, and saves the PROCESSED data to CSV.
+    """
+
+    if not os.path.exists(file_path):
+        print(f"Error: '{file_path}' not found.")
+        return
+
+    # Determine input file type
+    file_ext = os.path.splitext(file_path)[1].lower()
+    is_cine = (file_ext == '.cine')
+
+    print(f"Opening {file_ext.upper()} file...")
+    if output_csv is None:
+        output_csv = file_path.rsplit('.', 1)[0] + '.csv'
     # --- 1. INITIALIZATION & METADATA ---
     if is_cine:
         metadata = cr.read_metadata(file_path)
@@ -164,7 +253,8 @@ def process_video(file_path, output_csv, r, output_mp4=None, fps=1000, threshold
 
     # --- 2. OPTIONAL VIDEO WRITER SETUP ---
     video_writer = None
-    if output_mp4:
+    if is_cine:
+        output_mp4 = file_path.rsplit('.', 1)[0] + '_reference.mp4' if output_mp4 is None else output_mp4
         new_width = int(orig_width * scale_factor)
         new_height = int(orig_height * scale_factor)
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -197,20 +287,20 @@ def process_video(file_path, output_csv, r, output_mp4=None, fps=1000, threshold
             continue
 
         # --- CV EXTRACTION ---
-        gray_frame, binary_mask = get_binary_mask(frame_data, threshold)
-        p1, p2, _ = extract_trapezoid_features(binary_mask)
+        # gray_frame, binary_mask = get_binary_mask(frame_data, threshold)
+        # p1, p2, _ = extract_trapezoid_features(binary_mask)
         
-        if p1 and p2:
-            p1_x_cm = p1[0] / PX_PER_CM
-            width_px = np.linalg.norm([p1[0] - p2[0], p1[1] - p2[1]])
-            width_cm = width_px / PX_PER_CM
-            raw_data_list.append([time_s, p1_x_cm, width_cm])
-        else:
-            raw_data_list.append([time_s, np.nan, np.nan])
+        # if p1 and p2:
+        #     p1_x_cm = p1[0] / PX_PER_CM
+        #     width_px = np.linalg.norm([p1[0] - p2[0], p1[1] - p2[1]])
+        #     width_cm = width_px / PX_PER_CM
+        #     raw_data_list.append([time_s, p1_x_cm, width_cm])
+        # else:
+        #     raw_data_list.append([time_s, np.nan, np.nan])
 
         # --- VIDEO EXPORT ---
         if video_writer:
-            frame_resized = cv2.resize(gray_frame, (new_width, new_height), interpolation=cv2.INTER_AREA)
+            frame_resized = cv2.resize(frame_data, (new_width, new_height), interpolation=cv2.INTER_AREA)
             video_writer.write(frame_resized)
 
         if (i + 1) % 100 == 0: 
@@ -223,45 +313,46 @@ def process_video(file_path, output_csv, r, output_mp4=None, fps=1000, threshold
         video_writer.release()
         print(f"Reference video saved to: {output_mp4}")
 
-    # --- 4. SIGNAL PROCESSING & CSV EXPORT ---
-    print("\nApplying denoising and phase unwrapping...")
+    # # --- 4. SIGNAL PROCESSING & CSV EXPORT ---
+    # print("\nApplying denoising and phase unwrapping...")
     
-    # Load raw data into DataFrame
-    df = pd.DataFrame(raw_data_list, columns=['time_s', 'position_cm', 'theta_raw_cm'])
+    # # Load raw data into DataFrame
+    # df = pd.DataFrame(raw_data_list, columns=['time_s', 'position_cm', 'theta_raw_cm'])
+
+    # # Run the unwrapping and smoothing logic
+    # t_data, pos_data, theta_data = process_signals(df, r)
+
+    # # Save the strictly processed data to CSV
+    # df_processed = pd.DataFrame({
+    #     'time_s': t_data,
+    #     'position_cm': pos_data,
+    #     'theta_deg': theta_data
+    # })
     
-    # Clip off the first 0.3 seconds and zero the time 
-    # (Doing this BEFORE unwrapping ensures clean kinematics)
-    df = df[df['time_s'] >= 0.3].copy()
-    if not df.empty:
-        df['time_s'] = df['time_s'] - df['time_s'].iloc[0]
+    # df_processed.to_csv(output_csv, index=False)
+    # print(f"Processed Data saved to: {output_csv}\nPipeline Complete!")
 
-    # Run the unwrapping and smoothing logic
-    t_data, pos_data, theta_data = process_signals(df, r)
 
-    # Save the strictly processed data to CSV
-    df_processed = pd.DataFrame({
-        'time_s': t_data,
-        'position_cm': pos_data,
-        'theta_deg': theta_data
-    })
-    
-    df_processed.to_csv(output_csv, index=False)
-    print(f"Processed Data saved to: {output_csv}\nPipeline Complete!")
-
-def debug_mp4_tracking(file_path, threshold=128, skip_frames=10, delay_seconds=0.1):
-    """Steps through an MP4 file, visually confirming the computer vision logic."""
+def debug_mp4_tracking(file_path, output_video_path, threshold=128):
+    """
+    Steps through an MP4 file, visually confirming the computer vision logic,
+    and saves the Matplotlib visualization as a debug video.
+    """
     if not os.path.exists(file_path):
         print(f"Error: '{file_path}' not found.")
         return
 
     cap = cv2.VideoCapture(file_path)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    print(f"Starting auto-debug loop (skipping {skip_frames} frames)...")
+    print(f"Starting debug video render")
 
-    plt.ion()
-    fig = plt.figure(figsize=(10, 10))
+    # Disable interactive mode since we are saving to a file, not viewing live
+    plt.ioff() 
+    fig = plt.figure(figsize=(10, 90/16))
+    
+    video_writer = None
 
-    for i in range(0, total_frames, skip_frames):
+    for i in range(0, total_frames):
         cap.set(cv2.CAP_PROP_POS_FRAMES, i)
         ret, frame = cap.read()
         if not ret: break
@@ -271,36 +362,65 @@ def debug_mp4_tracking(file_path, threshold=128, skip_frames=10, delay_seconds=0
 
         if p1 is None: continue
 
-        # Visualizer
+        # --- Visualizer ---
         plt.clf()
+        
+        # Calculate elapsed time based on original 1000 FPS
+        elapsed_time = i / 1000.0
+        fig.suptitle(f'Time: {elapsed_time:.3f}s', fontsize=16, fontweight='bold')
+
         ax1 = plt.subplot(2, 1, 1)
         ax1.imshow(gray_frame, cmap='gray')
-        ax1.set_title(f'Original Frame (Index: {i})')
+        ax1.set_title('Original video', fontsize=12)
         ax1.axis('off')
         
         ax2 = plt.subplot(2, 1, 2)
         ax2.imshow(binary_mask, cmap='gray')
+        ax2.set_title('Extracted position and angle', fontsize=12)
 
         # Plot edges and points
         ax2.plot(edges['right_x'], edges['right_y'], color='magenta', linewidth=2, label='Right Edge')
-        ax2.plot(*edges['tr_pt'], 'mo', markersize=5,)
-        ax2.plot(*edges['br_pt'], 'mo', markersize=5,)
+        ax2.plot(*edges['tr_pt'], 'mo', markersize=5)
+        ax2.plot(*edges['br_pt'], 'mo', markersize=5)
 
         ax2.plot(*p1, 'bo', markersize=8, label='Position')
-        ax2.plot(*p2, 'ro', markersize=8, )
+        ax2.plot(*p2, 'ro', markersize=8)
         ax2.plot([p1[0], p2[0]], [p1[1], p2[1]], 'r--', linewidth=2, label='Angle measurement')
         
         ax2.legend(loc='lower left')
         ax2.axis('off')
         
         plt.tight_layout()
-        plt.draw()
-        plt.pause(delay_seconds)
+        
+        # --- Convert Matplotlib Figure to OpenCV Frame ---
+        # Force a draw so the renderer updates the buffer
+        fig.canvas.draw()
+        
+        # Extract the RGBA buffer from the figure
+        rgba_buffer = np.asarray(fig.canvas.buffer_rgba())
+        
+        # Drop the Alpha channel to make it standard RGB, then convert to BGR for OpenCV
+        rgb_frame = rgba_buffer[:, :, :3]
+        bgr_frame = cv2.cvtColor(rgb_frame, cv2.COLOR_RGB2BGR)
+        
+        # Initialize the VideoWriter on the first frame once we know the exact pixel dimensions
+        if video_writer is None:
+            height, width, _ = bgr_frame.shape
+            fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+            # Set output fps to 60 so the debug video plays smoothly
+            video_writer = cv2.VideoWriter(output_video_path, fourcc, 60.0, (width, height))
+            
+        video_writer.write(bgr_frame)
+
+        if (i) % 100 == 0:
+            print(f"Rendered {i}/{total_frames} frames...")
 
     cap.release()
-    plt.ioff()
-    plt.show()
-
+    if video_writer:
+        video_writer.release()
+    plt.close(fig) # Free memory
+    
+    print(f"Debug video successfully saved to: {output_video_path}")
 # ==========================================
 # 3. MATH & FFT MODELS
 # ==========================================
@@ -501,14 +621,26 @@ def analyze_kinematic_data(csv_file_path, r, title="", do_fft=True):
 # 5. EXECUTION
 # ==========================================
 if __name__ == "__main__":
-    circ = 7
-    name = f"sample_b_circ_{circ}_wound_linear_resonance"
+    circ = 8.5
+    # name = f"sample_a_circ_{circ}_linearresonance"
 
-    video_path = f"/Users/bwong/Desktop/rbodies/dynamics/videos/{name}.mp4"
-    csv_path = f"/Users/bwong/Desktop/rbodies/dynamics/processed_data/{name}.csv"
+    # video_path = f"/Users/bwong/Desktop/rbodies/dynamics/videos/{name}.mp4"
+    # csv_path = f"/Users/bwong/Desktop/rbodies/dynamics/processed_data/{name}.csv"
+    # video_path = f"/Volumes/maxone/Brandon/double.cine"
+    # debug_video_path = f"/Users/bwong/Desktop/rbodies/dynamics/videos/debug_sample_b_circ_7_unwound_linear_resonance.mp4"
+    # debug_mp4_tracking(video_path, debug_video_path, threshold=130)
 
-    process_video(video_path, output_csv=csv_path, fps=1000, threshold=130, scale_factor=0.5, r=circ/(2*np.pi))
-    # analyze_kinematic_data(csv_path, r=circ/(2*np.pi), title = "Winding Resonance", )
+    # process_video("/Volumes/maxone/Brandon/torsion_resonance.cine", output_csv=None, fps=1000, threshold=130, scale_factor=0.5, r=circ/(2*np.pi))
+    compress_video("/Volumes/maxone/Brandon/double.cine")
+    compress_video("/Volumes/maxone/Brandon/locking3.cine")
+    compress_video("/Volumes/maxone/Brandon/torsion_resonance.cine")
+
+
+    # compress_video("/Volumes/maxone/Brandon/freq_sweep.cine")
+
+    
+    
+    # analyze_kinematic_data(csv_path, r=circ/(2*np.pi), title = "10cm Linear Resonance", )
 
 """
 sample a linear resonance: paper triangle of dimensions 3x6 cm
