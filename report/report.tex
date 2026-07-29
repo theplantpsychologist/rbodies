@@ -25,5 +25,326 @@
 \end{abstract}
 
 \section{Introduction}
-introduction
+goal: explain double exponential by end of week
+
+\section{Simplified geometric model}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{figs/capstan_helix.pdf}
+    \caption{in progress}\label{fig:setup}
+\end{figure}
+
+Refer to Figure~\ref{fig:setup} for a visual representation of the system. The system has the following geometric constants:
+\begin{itemize}
+    \item $L$: the length of the unrolled rectangle.
+    \item $W$: the width of the unrolled rectangle. Assume $L \gg W$.
+    \item $\theta_L$: the total wind angle of the helix, which is fixed based on the boundary conditions. $\theta_L = 2\pi n$ where $n$ is the number of winds around the $z$ axis (not necessarily integer).
+\end{itemize}
+
+The state of the system is parametrized by the parameter $x$, which describes how far the active end has displaced in the $z$ direction relative to the base end.
+
+Positions on the helix can be described with local surface $u,v$ coordinates, which describe the unrolled rectangle, or global cylindrical $r,\theta,z$ coordinates.
+
+To simplify the geometry, we assume that the helix has a constant radius $r$ and a constant pitch angle $\phi$ (the angle the local $\hat{u}$ makes with the $r,\theta$ plane). By unrolling the rectangle, we get:
+\begin{equation}\label{eq:phi}
+    \phi = \sin^{-1}\left(\frac{x}{L}\right)
+\end{equation}
+\begin{equation}\label{eq:r}
+    r = \frac{L}{\theta_L}\cos\phi = \frac{\sqrt{L^2 - x^2}}{\theta_L}
+\end{equation}
+
+\section{Quasi-static force-displacement derivation}
+We will model the paper yoyo as a 2d membrane. We will ignore forces due to elasticity or plasticity, only friction, and will assume all deformation is developable bending rather than in plane stretching.
+
+\subsection{Static equilibrium equations}
+An area element $du \times dv$ at point $(u,v)$ has a plane stress tensor:
+\begin{equation}
+    \sigma(u,v) = 
+    \begin{bmatrix}
+        \sigma_{uu} & \sigma_{uv}\\
+        \sigma_{uv} & \sigma_{vv}
+    \end{bmatrix}
+\end{equation}
+
+We will make a simplifying assumption that because the long ends of the strip are free, the stress in the $v$ direction is negligible, so $\sigma_{vv} \approx 0$. 
+
+\subsection{In-plane force balance}
+Now we perform a force balance on the area element in $u$ and $v$. The area element is not perfectly flat, but because $\cos\theta \approx 1$ for small angles, we can treat it as flat for in-plane force balance. The force balance in $u$ is:
+\begin{align}
+    \left[\sigma_{uv}(u,v+dv) - \sigma_{uv}(u,v)\right]du + \left[\sigma_{uu}(u+du,v) - \sigma_{uu}(u,v)\right]dv + f_u du dv &= 0\\
+    \frac{\sigma_{uv}(u,v+dv) - \sigma_{uv}(u,v)}{dv} + \frac{\sigma_{uu}(u+du,v) - \sigma_{uu}(u,v)}{du} + f_u &= 0
+\end{align}
+\begin{equation}\label{eq:force_u}
+    \boxed{\frac{\partial \sigma_{uv}}{\partial v} + \frac{\partial \sigma_{uu}}{\partial u} + f_u = 0}
+\end{equation}
+Similarly, the force balance in $v$ (neglecting $\sigma_{vv}$) is:
+\begin{equation}\label{eq:force_v}
+    \boxed{\frac{\partial \sigma_{uv}}{\partial u} + f_v = 0}
+\end{equation}
+\subsection{Out-of-plane force balance}
+Next, we take the out-of-plane force balance by projecting the in-plane forces onto the $\hat{r}$ vector normal to the surface at $(u,v)$. 
+
+Because the $du \times dv$ element is wrapped around a cylinder of radius $r$, the local basis vectors $\hat{u}$ and $\hat{v}$ rotate continuously in 3D space. To find the net radial force, we must determine how much these vectors tilt inward along the edges of the differential element.
+
+We define $\hat{\theta}$ as the azimuthal unit vector around the cylinder. The local membrane directions are related to the cylindrical basis by:
+\begin{align*}
+    \hat{u} &= \cos\phi \, \hat{\theta} + \sin\phi \, \hat{z} \\
+    \hat{v} &= -\sin\phi \, \hat{\theta} + \cos\phi \, \hat{z}
+\end{align*}
+
+As we traverse the surface, the only basis vector that changes direction is $\hat{\theta}$, which rotates inward toward $-\hat{r}$. Moving a distance $du$ along $\hat{u}$ corresponds to an azimuthal angle change of $d\theta_u = \frac{du \cos\phi}{r}$. Moving a distance $dv$ along $\hat{v}$ corresponds to an angle change of $d\theta_v = \frac{-dv \sin\phi}{r}$. 
+
+Evaluating the change in the basis vectors along these steps gives us their radial projections on the positive faces of the element:
+\begin{itemize}
+    \item On the $u+du$ face, $\hat{u}$ rotates inward by $d\theta_u \cos\phi = \frac{\cos^2\phi}{r} du$.
+    \item On the $u+du$ face, $\hat{v}$ rotates outward by $d\theta_u (-\sin\phi) = -\frac{\sin\phi\cos\phi}{r} du$.
+    \item On the $v+dv$ face, $\hat{u}$ rotates outward by $d\theta_v \cos\phi = -\frac{\sin\phi\cos\phi}{r} dv$.
+\end{itemize}
+
+The total outward radial force from the internal stresses acting on these rotated faces is the sum of the forces multiplied by their radial projections. We balance this against an outward contact pressure $p$ (force per unit area):
+\begin{equation}
+    p \, du \, dv + \left[ -\sigma_{uu} \left(\frac{\cos^2\phi}{r} du\right) \right] dv + \left[ \sigma_{uv} \left(\frac{\sin\phi\cos\phi}{r} du\right) \right] dv + \left[ \sigma_{uv} \left(\frac{\sin\phi\cos\phi}{r} dv\right) \right] du = 0
+\end{equation}
+
+Dividing the entire equation by the common area element $du\, dv$, and defining a scaled pressure parameter $P = p \cdot r$ (with units of force per unit length) to simplify the geometry, we obtain the canonical membrane out-of-plane equilibrium:
+
+\begin{align}
+    P -  (\cos^2\phi)\sigma_{uu}(u+du,v) + (\cos\phi\sin\phi)\sigma_{uv}(u+du,v) + (\cos\phi\sin\phi)\sigma_{uv}(u,v+dv)&=0\\
+    P -  (\cos^2\phi)\sigma_{uu} + (2\cos\phi\sin\phi)\sigma_{uv}&=0
+\end{align}
+
+Finally, we substitute the global kinematic variables $x$ and $L$ using the geometric relations from (\ref{eq:phi}) and (\ref{eq:r}):
+\begin{equation}\label{eq:p}
+    \boxed{P = \frac{1}{L^2}\left(L^2-x^2\right)\sigma_{uu} - \frac{1}{L^2}\left(2x\sqrt{L^2-x^2}\right)\sigma_{uv}}
+\end{equation}
+
+% To decouple this expression and obtain an analytically tractable model, we introduce the geometric assumption that the unrolled ribbon length is vastly greater than the coil radius ($L \gg r$). Recall from (\ref{eq:r}) that $\sqrt{L^2-x^2} = r\theta_L$.
+% Comparing the geometric prefactors of the two stresses in Eq.~\ref{eq:p_exact}, the ratio of the normal-stress prefactor to the shear-stress prefactor is:
+% \begin{equation}
+%     \frac{\text{Prefactor}(\sigma_{uu})}{\text{Prefactor}(\sigma_{uv})} = \frac{L^2 - x^2}{2x\sqrt{L^2-x^2}} = \frac{\sqrt{L^2-x^2}}{2x} = \frac{r\theta_L}{2x}
+% \end{equation}
+
+
+
+
+
+
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=0.5\textwidth]{figs/curved_element.pdf}
+\caption{in progress}\label{fig:curved_element}
+\end{figure}
+
+\subsection{Friction equations}
+
+An area element $du \times dv$ at point $(u,v)$ has a position vector Recall that $r,\phi$ are functions of global extension $x$ and constant with respect to $u,v$. By plugging in (\ref{eq:phi}) and (\ref{eq:r}):
+
+\begin{equation}
+    \vec{p}(u,v,x) =
+    \begin{bmatrix}
+        r\\
+        r\theta\\
+        z
+    \end{bmatrix} =
+    \begin{bmatrix}
+        \frac{\sqrt{L^2-x^2}}{\theta_L}\\
+        u \cos\phi - v \sin\phi\\
+        u \sin\phi + v \cos\phi
+    \end{bmatrix}= 
+    \begin{bmatrix}
+        \frac{\sqrt{L^2 -x^2 }}{\theta_L }\\
+        -\frac{{vx-u\sqrt{L^2 -x^2 }}}{L}\\
+        \frac{ux+v\sqrt{L^2 -x^2 }}{L}
+    \end{bmatrix}
+\end{equation}
+Then, the velocity of the area element is:
+\begin{equation}\label{eq:velocity}
+    \frac{\partial}{\partial x} \vec{p}(u,v,x) =
+    \begin{bmatrix}
+        -\frac{x}{\theta_L \,\sqrt{L^2 -x^2 }}\\
+        -\frac{v}{L}+\frac{ux}{L\sqrt{L^2 -x^2 }}\\
+        \frac{u}{L}-\frac{vx}{L\sqrt{L^2 -x^2 }}\\
+    \end{bmatrix}
+\end{equation}
+
+An area element at point $(u,v)$ overlaps with an interior area element at point $(u^-,v^-)$ if their cylindrical coordinates have equal $r$ and $z$, but $\theta^- = \theta - 2\pi$. Therefore,
+\begin{align}
+    u^- &= u - 2\pi r \cos \phi\\ 
+    % \text{ for } u^- \in [0,L]\\
+    v^- &= v + 2\pi r \sin \phi 
+    % \text{ for } v^- \in [-W/2,W/2]
+\end{align}
+We can then plug these into (\ref{eq:velocity}) to compute the difference in velocity between the two overlapping area elements, which gives the slip direction in the $r, \theta, z$ frame for point ($u,v$):
+\begin{equation}
+    \frac{\partial \vec{p}(u,v,x)}{\partial x} - \frac{\partial \vec{p}(u^-,v^-,x)}{\partial x} =
+    \begin{bmatrix}
+        0\\
+        0\\
+        \frac{2\pi}{\theta_L}
+    \end{bmatrix}
+\end{equation}
+As expected, there is no relative velocity in the radial direction (i.e., the layers are not lifting away from each other). There is also no velocity in the tangential direction because the total twist angle is fixed. 
+The friction direction is proportional to the slip direction, i.e, the global $\hat{z}$. This gives us a ratio $R_f$ between the friction components in the $u$ and $v$ directions:
+\begin{equation}
+    R_f := \frac{f_u}{f_v} = \frac{\sin\phi}{\cos\phi} = \frac{x}{\sqrt{L^2 - x^2}}
+\end{equation}
+
+
+Additionally, we can compute the magnitude of the friction force using the Coulomb friction model based on the out-of-plane normal force:
+\begin{equation}
+    \mu P = \sqrt{f_u^2 + f_v^2} = f_v \sqrt{1 + R_f^2} \implies f_v = \frac{\mu}{\sqrt{1 + R_f^2}}P, \quad f_u = \frac{\mu R_f}{\sqrt{1 + R_f^2}}P
+\end{equation}
+\begin{equation}\label{eq:f_u}
+    \boxed{f_u = \frac{\mu}{L^3}\left[ x{(r\theta_L)}^2 \sigma_{uu} - 2x^2{(r\theta_L)} \sigma_{uv}   \right]}
+\end{equation}
+\begin{equation}\label{eq:f_v}
+    \boxed{f_v = \frac{\mu}{L^3}\left[ {(r \theta_L)}^3 \sigma_{uu} - 2x{(r\theta_L)}^2 \sigma_{uv}   \right]}
+\end{equation}
+ 
+
+
+\subsection{PDE formulation}
+We now combine Equations~(\ref{eq:force_u}), (\ref{eq:force_v}), (\ref{eq:f_u}), and (\ref{eq:f_v}) to get the following coupled system of first-order partial differential equations for the plane stress components $\sigma_{uu}(u,v)$ and $\sigma_{uv}(u,v)$ at any frozen extension $x$:
+\begin{align}
+    \frac{\partial \sigma_{uu}}{\partial u} + \frac{\partial \sigma_{uv}}{\partial v} + \underbrace{C_u \sigma_{uu} + D_u \sigma_{uv}}_{f_u} &= 0 \label{eq:pde_sys_u}\\
+    \frac{\partial \sigma_{uv}}{\partial u} + \underbrace{C_v \sigma_{uu} + D_v \sigma_{uv}}_{f_v} &= 0 \label{eq:pde_sys_v}
+\end{align}
+where the geometric friction coefficients are constants with respect to the local spatial coordinates $(u,v)$ and are defined by:
+\begin{align}
+    C_u(x) &= \frac{\mu x (r\theta_L)^2}{L^3}, & D_u(x) &= -\frac{2\mu x^2 (r\theta_L)}{L^3} \label{eq:coeff_u}\\
+    C_v(x) &= \frac{\mu (r\theta_L)^3}{L^3}, & D_v(x) &= -\frac{2\mu x (r\theta_L)^2}{L^3} \label{eq:coeff_v}
+\end{align}
+
+To decouple the system, we assume $C_v(x) \neq 0$ and solve algebraically for the normal stress $\sigma_{uu}$ using Equation~(\ref{eq:pde_sys_v}):
+\begin{equation}\label{eq:sigma_uu_isolated}
+    \sigma_{uu} = -\frac{1}{C_v} \left( \frac{\partial \sigma_{uv}}{\partial u} + D_v \sigma_{uv} \right)
+\end{equation}
+Differentiating Equation~(\ref{eq:sigma_uu_isolated}) with respect to the longitudinal arc length $u$ yields:
+\begin{equation}\label{eq:sigma_uu_diff}
+    \frac{\partial \sigma_{uu}}{\partial u} = -\frac{1}{C_v} \left( \frac{\partial^2 \sigma_{uv}}{\partial u^2} + D_v \frac{\partial \sigma_{uv}}{\partial u} \right)
+\end{equation}
+Substituting Equations~(\ref{eq:sigma_uu_isolated}) and (\ref{eq:sigma_uu_diff}) back into the longitudinal equilibrium Equation~(\ref{eq:pde_sys_u}) eliminates $\sigma_{uu}$ entirely:
+\begin{equation}
+    -\frac{1}{C_v} \left( \frac{\partial^2 \sigma_{uv}}{\partial u^2} + D_v \frac{\partial \sigma_{uv}}{\partial u} \right) + \frac{\partial \sigma_{uv}}{\partial v} - \frac{C_u}{C_v} \left( \frac{\partial \sigma_{uv}}{\partial u} + D_v \sigma_{uv} \right) + D_u \sigma_{uv} = 0
+\end{equation}
+Multiplying through by $-C_v$ and collecting terms by order of differentiation yields a single second-order, linear, homogeneous partial differential equation for the shear stress field $\sigma_{uv}$:
+\begin{equation}\label{eq:pde_second_order}
+    \frac{\partial^2 \sigma_{uv}}{\partial u^2} + (C_u + D_v) \frac{\partial \sigma_{uv}}{\partial u} - C_v \frac{\partial \sigma_{uv}}{\partial v} + (C_u D_v - C_v D_u) \sigma_{uv} = 0
+\end{equation}
+
+Because all coefficients are constant with respect to $(u,v)$, Equation~(\ref{eq:pde_second_order}) is separable. We assume a trial solution of the form:
+\begin{equation}
+    \sigma_{uv}(u,v) = V(u) e^{k v}
+\end{equation}
+where $k$ is a transverse separation constant determined by the boundary conditions across the ribbon width $W$. Substituting this trial solution into Equation~(\ref{eq:pde_second_order}) converts the $\frac{\partial}{\partial v}$ operator into scalar multiplication by $k$, reducing the PDE to an ordinary differential equation for $V(u)$:
+\begin{equation}\label{eq:ode_V}
+    V''(u) + (C_u + D_v) V'(u) + \left[ C_u D_v - C_v D_u - k C_v \right] V(u) = 0
+\end{equation}
+The characteristic polynomial of Equation~(\ref{eq:ode_V}) is $r^2 + (C_u + D_v)r + (C_u D_v - C_v D_u - k C_v) = 0$. By the quadratic formula, the two longitudinal growth rates (eigenvalues) of the capstan system are:
+\begin{equation}\label{eq:eigenvalues_exact}
+    \boxed{\lambda_{1,2}(x) = \frac{1}{2}\left[ -(C_u + D_v) \pm \sqrt{(C_u + D_v)^2 - 4\left( C_u D_v - C_v D_u - k C_v \right)} \,\right]}
+\end{equation}
+
+
+Assuming the discriminant is strictly positive, the general closed-form solution for the shear stress field is a linear combination of both exponential modes:
+\begin{equation}\label{eq:sigma_uv_sol_exact}
+    \boxed{\sigma_{uv}(u,v) = \left( A_1 e^{\lambda_1(x) u} + A_2 e^{\lambda_2(x) u} \right) e^{k v}}
+\end{equation}
+where $A_1$ and $A_2$ are arbitrary integration constants. To recover the corresponding normal stress field $\sigma_{uu}(u,v)$, we substitute Equation~(\ref{eq:sigma_uv_sol_exact}) and its spatial derivative $\frac{\partial \sigma_{uv}}{\partial u} = (\lambda_1 A_1 e^{\lambda_1 u} + \lambda_2 A_2 e^{\lambda_2 u})e^{kv}$ back into Equation~(\ref{eq:sigma_uu_isolated}):
+\begin{equation}\label{eq:sigma_uu_sol_exact}
+    \boxed{\sigma_{uu}(u,v) = -\frac{1}{C_v} \left[ A_1 (\lambda_1(x) + D_v) e^{\lambda_1(x) u} + A_2 (\lambda_2(x) + D_v) e^{\lambda_2(x) u} \right] e^{k v}}
+\end{equation}
+Equations~(\ref{eq:sigma_uv_sol_exact}) and (\ref{eq:sigma_uu_sol_exact}) represent the exact 2D stress distributions along the unrolled coil without invoking geometric or asymptotic approximations.
+
+Finally, to derive the relationship between the global extension $x$ and the macroscopic force measured by the Instron, we integrate the projected normal and shear stresses along the short edge of the active end of the strip ($u=L$). Using the geometric relations $\sin\phi = x/L$ and $\cos\phi = \sqrt{L^2 - x^2}/L$ from Equations~(\ref{eq:phi}) and (\ref{eq:r}), the total axial force is:
+\begin{align}
+    F(x) &= \int_{-\frac{W}{2}}^{\frac{W}{2}} \left[ \sin(\phi)\,\sigma_{uu}(L,v) + \cos(\phi)\,\sigma_{uv}(L,v) \right] \mathrm{d}v \\
+    &= \frac{1}{L} \int_{-\frac{W}{2}}^{\frac{W}{2}} \left[ x\,\sigma_{uu}(L,v) + \sqrt{L^2 - x^2}\,\sigma_{uv}(L,v) \right] \mathrm{d}v
+\end{align}
+Substituting the closed-form stress solutions from Equations~(\ref{eq:sigma_uv_sol_exact}) and (\ref{eq:sigma_uu_sol_exact}), the transverse integral factors out across the width $W$:
+\begin{align}
+    F(x) &= \frac{1}{L} \left( \int_{-\frac{W}{2}}^{\frac{W}{2}} e^{kv}\,\mathrm{d}v \right) \sum_{i=1}^{2} A_i e^{\lambda_i(x) L} \left[ \sqrt{L^2 - x^2} - \frac{x}{C_v(x)}\big(\lambda_i(x) + D_v(x)\big) \right] \\
+    &= \frac{2 \sinh\left(\frac{k W}{2}\right)}{k L} \sum_{i=1}^{2} A_i e^{\lambda_i(x) L} \left[ \sqrt{L^2 - x^2} - \frac{x}{C_v(x)}\big(\lambda_i(x) + D_v(x)\big) \right]
+\end{align}
+Grouping the geometric projection factors and transverse integration constants into two macroscopic amplitude coefficients:
+\begin{equation}\label{eq:B_coeff}
+    B_i(x) = \frac{2 A_i \sinh\left(\frac{k W}{2}\right)}{k L} \left[ \sqrt{L^2 - x^2} - \frac{x}{C_v(x)}\big(\lambda_i(x) + D_v(x)\big) \right] \quad \text{for } i \in \{1,2\}
+\end{equation}
+the macroscopic Instron force collapses into the exact closed-form double-exponential capstan equation:
+\begin{equation}\label{eq:F_final_closed_form}
+    \boxed{F(x) = B_1(x) e^{\lambda_1(x) L} + B_2(x) e^{\lambda_2(x) L}}
+\end{equation}
+
+% Finally, to derive the relationship between $x$ and the actual force measured by the instron, we need to integrate over the stresses along the short side of the active end of the strip ($u=L$):
+% \begin{align}
+% F(x) &= \int_{-\frac{W}{2}}^{\frac{W}{2}} {\left(\cos \left(\phi \right)\,\sigma_{\textrm{uv}}(L,v) +\sin \left(\phi \right)\,\sigma_{\textrm{uu}}(L,v) \right)}\;\textrm{d}v\\
+% &= \frac{1}{L}\int_{-\frac{W}{2}}^{\frac{W}{2}} {\left(x\,\sigma_{\textrm{uu}}(L,v) +\sqrt{L^2 -x^2 }\,\sigma_{\textrm{uv}}(L,v) \right)}\;\textrm{d}v\\
+% &= \frac{1}{L} \left( \int_{-\frac{W}{2}}^{\frac{W}{2}} e^{kv} \;\textrm{d}v \right) \sum_{i=1}^{2} C_i e^{\lambda_i(x) L} \left[ x - \mu_v(x) \frac{(L^2 - x^2)^{3/2}}{L^2 \lambda_i(x)} \right] \label{eq:F_integrated}\\
+% &= \frac{2 \sinh\left(\frac{k W}{2}\right)}{k L} \sum_{i=1}^{2} C_i e^{\lambda_i(x) L} \left[ x - \mu_v(x) \frac{(L^2 - x^2)^{3/2}}{L^2 \lambda_i(x)} \right]
+% \end{align}
+% Defining the macroscopic amplitude coefficients $A_i(x) = \frac{2 C_i \sinh(kW/2)}{k L} \left[ x - \mu_v(x) \frac{(L^2 - x^2)^{3/2}}{L^2 \lambda_i(x)} \right]$, the macroscopic Instron force collapses into the closed-form double-exponential capstan equation:
+% \begin{equation}\label{eq:F_final_closed_form}
+%     \boxed{F(x) = A_1(x) e^{\lambda_1(x) L} + A_2(x) e^{\lambda_2(x) L}}
+% \end{equation}
+
+
+% \subsection{PDE formulation}
+% We now combine equations (\ref{eq:force_u}), (\ref{eq:force_v}), (\ref{eq:f_u}), and (\ref{eq:f_v}) to get the following system of PDEs:
+% [formulate and solve step by step, no approximations/assumptions for now]
+
+
+% Assuming that $L \gg r$ (which implies $\sqrt{L^2 - x^2} \gg 2x \frac{\sqrt{L^2 - x^2}}{L}$ for low-to-moderate extensions), the out-of-plane pressure is dominated by the longitudinal hoop stress $\sigma_{uu}$, rendering the twist-coupling term $2x\sqrt{L^2 - x^2}\sigma_{uv}$ negligible. Furthermore, for a tightly wound coil where $\theta_L \gg 1$, the slip-ratio term in the denominator simplifies asymptotically, reducing the governing equation to:
+% \begin{equation}\label{eq:pde_uv_approx}
+%     \frac{\partial }{\partial u}\;\sigma_{\textrm{uv}} \approx 
+%     -\mu \left(1 - \frac{x^2}{L^2}\right) \sigma_{\textrm{uu}}
+% \end{equation}
+
+% To solve for the coupled stress fields, we relate the shear friction density $f_u$ to the transverse friction density $f_v$ via the kinematic slip ratio $R(x) = f_v / f_u$. Under the slender-ribbon approximation where out-of-plane pressure is $P \approx \left(1 - \frac{x^2}{L^2}\right)\sigma_{uu}$, the in-plane equilibrium equations (Eqs.~\ref{eq:force_u} and \ref{eq:force_v}) reduce to:
+% \begin{align}
+%     \frac{\partial \sigma_{uu}}{\partial u} + \frac{\partial \sigma_{uv}}{\partial v} &= -\mu_u(x) \left(1 - \frac{x^2}{L^2}\right) \sigma_{uu} \label{eq:pde_uu_decoupled}\\
+%     \frac{\partial \sigma_{uv}}{\partial u} &= -\mu_v(x) \left(1 - \frac{x^2}{L^2}\right) \sigma_{uu} \label{eq:pde_uv_decoupled}
+% \end{align}
+% where $\mu_u(x) = \frac{\mu}{\sqrt{1+R(x)^2}}$ and $\mu_v(x) = \frac{\mu R(x)}{\sqrt{1+R(x)^2}}$ are the effective directional friction coefficients for a given extension $x$.
+
+% Differentiating Eq.~\ref{eq:pde_uu_decoupled} with respect to $u$ and substituting $\frac{\partial \sigma_{uv}}{\partial u}$ from Eq.~\ref{eq:pde_uv_decoupled} yields a second-order linear partial differential equation for the normal stress:
+% \begin{equation}
+%     \frac{\partial^2 \sigma_{uu}}{\partial u^2} + \mu_u(x)\left(1 - \frac{x^2}{L^2}\right) \frac{\partial \sigma_{uu}}{\partial u} - \mu_v(x)\left(1 - \frac{x^2}{L^2}\right) \frac{\partial \sigma_{uv}}{\partial v} = 0
+% \end{equation}
+% \begin{align}
+%     \frac{\partial^2 \sigma_{uu}}{\partial u^2} + \mu_u(x)\left(1 - \frac{x^2}{L^2}\right) \frac{\partial \sigma_{uu}}{\partial u} - \mu_v(x)\left(1 - \frac{x^2}{L^2}\right) \frac{\partial \sigma_{uv}}{\partial v} = 0
+% \end{align}
+% Using separation of variables, we assume solutions of the form $\sigma_{uu}(u,v) = U(u)e^{kv}$ and $\sigma_{uv}(u,v) = V(u)e^{kv}$, where $k$ is the transverse separation constant determined by the strip width $W$. Evaluating the characteristic polynomial of the resulting linear ODE system yields two distinct real eigenvalues, $\lambda_1(x)$ and $\lambda_2(x)$:
+% \begin{equation}\label{eq:eigenvalues}
+%     \lambda_{1,2}(x) = \frac{1}{2} \left(1 - \frac{x^2}{L^2}\right) \left[ -\mu_u(x) \pm \sqrt{\mu_u(x)^2 - \frac{4 k \mu_v(x)}{1 - x^2/L^2}} \,\right]
+% \end{equation}
+% The closed-form solutions for the stress tensor components along the strip are therefore given by a linear superposition of both exponential modes:
+% \begin{align}
+%     \sigma_{uu}(u,v) &= \left( C_1 e^{\lambda_1(x) u} + C_2 e^{\lambda_2(x) u} \right) e^{k v} \label{eq:sigma_uu_sol}\\
+%     \sigma_{uv}(u,v) &= -\mu_v(x)\left(1 - \frac{x^2}{L^2}\right) \left( \frac{C_1}{\lambda_1(x)} e^{\lambda_1(x) u} + \frac{C_2}{\lambda_2(x)} e^{\lambda_2(x) u} \right) e^{k v} \label{eq:sigma_uv_sol}
+% \end{align}
+% where $C_1$ and $C_2$ are constants determined by the pre-tension boundary conditions at the base grip ($u=0$).
+
+
+
+
+
+\section{Experimental validation}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{figs/instron_plot.png}
+    \caption{Instron force-displacement data, with raw quantized data (grey), smoothed data (solid colored), and curve fit (dashed colored).}\label{fig:yoyo}
+\end{figure}
+
+% We have two equations for two unknowns, $\sigma_{uu}, \sigma_{uv}$.
+% For a constant $x$, the equations simplify to the form:
+% \begin{align}
+%     \frac{\partial }{\partial u}\sigma_{uu} + \frac{\partial }{\partial v}\sigma_{uv} &= C_1 \sigma_{uu} + C_2\sigma_{uv}\\
+%   \frac{\partial }{\partial u}\sigma_{uv} &= C_3 \sigma_{uu} + C_4\sigma_{uv}
+% \end{align}
+% where $C_1,C_2,C_3,C_4$ are constants in terms of $x,L,\theta_L$. Therefore, for a constant $x$, we can solve for the stress in the material based on the appropriate boundary conditions.
+
+% [this part to be completed soon]
 \end{document}
