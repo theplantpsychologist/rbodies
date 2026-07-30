@@ -252,8 +252,6 @@ We now substitute Equations~(\ref{eq:dP_du}) and (\ref{eq:dP_dv}) back into the 
 \end{equation}
 
 
-
-
 \section{PDE formulation and solution}
 We now combine Equations~(\ref{eq:force_u}), (\ref{eq:force_v}), and (\ref{eq:compat_final}) to get the following coupled system of partial differential equations for the plane-stress components $\sigma_{uu}(u,v)$, $\sigma_{uv}(u,v)$, and $\sigma_{vv}(u,v)$ at any frozen macroscopic extension $x$:
 \begin{align}
@@ -261,67 +259,66 @@ We now combine Equations~(\ref{eq:force_u}), (\ref{eq:force_v}), and (\ref{eq:co
     \frac{\partial \sigma_{uv}}{\partial u} + \frac{\partial \sigma_{vv}}{\partial v} + \underbrace{A_v \sigma_{uu} + B_v \sigma_{uv} + C_v \sigma_{vv}}_{f_v} &= 0 \label{eq:pde_sys_v}\\
     \nabla^2 (\sigma_{uu} + \sigma_{vv}) + A_c \frac{\partial P}{\partial u} + B_c \frac{\partial P}{\partial v} &= 0 \label{eq:pde_sys_c}
 \end{align}
-where $P$ is given by Equation~(\ref{eq:p}).
-By substituting Equation~(\ref{eq:p}) directly into the Coulomb friction equations (\ref{eq:f_u_f_v}), the geometric friction coupling coefficients are constant with respect to the local spatial coordinates $(u,v)$ and are given in closed form by:
+where $P$ is given by Equation~(\ref{eq:p}). By substituting Equation~(\ref{eq:p}) directly into the Coulomb friction equations (\ref{eq:f_u_f_v}), the geometric friction coupling coefficients are constant with respect to the local spatial coordinates $(u,v)$ and are given in closed form by:
 \begin{align}
     A_u(x) &= \frac{\mu}{r}\cos^2\phi\sin(2\phi), & B_u(x) &= -\frac{2\mu}{r}\sin^2(2\phi), & C_u(x) &= \frac{\mu}{r}\sin^2\phi\sin(2\phi) \label{eq:coeff_u_explicit}\\
     A_v(x) &= \frac{\mu}{r}\cos^2\phi\cos(2\phi), & B_v(x) &= -\frac{\mu}{r}\sin(4\phi),   & C_v(x) &= \frac{\mu}{r}\sin^2\phi\cos(2\phi) \label{eq:coeff_v_explicit}\\
     A_c(x) &= \frac{\mu(1+\nu)}{r}\sin(2\phi),    & B_c(x) &= \frac{\mu(1+\nu)}{r}\cos(2\phi) \label{eq:coeff_c_explicit}
 \end{align}
 
-Along the lateral boundaries of the unrolled ribbon ($v = \pm W/2$), the long edges are traction free. This imposes the exact longitudinal and transverse stress-free boundary conditions:
+Along the lateral boundaries of the unrolled ribbon ($v = \pm W/2$), the long edges are traction-free. This imposes the exact longitudinal and transverse stress-free boundary conditions:
 \begin{equation}\label{eq:bc_free_edges}
-    \sigma_{uv}\left(u, v=\pm \frac{W}{2}\right) = 0 \quad \text{and} \quad \sigma_{vv}\left(u,v=\pm \frac{W}{2}\right) = 0
+    \sigma_{uv}\left(u, v=\pm \frac{W}{2}\right) = 0 \quad \text{and} \quad \sigma_{vv}\left(u, v=\pm \frac{W}{2}\right) = 0
 \end{equation}
 
-Rather than assuming local transverse stress gradients vanish arbitrarily, we define the macroscopic width-averaged stress fields $\bar{\sigma}_{ij}(u)$:
+To rigorously reduce this $3 \times 3$ PDE system into a tractable one-dimensional model along the axial coordinate $u$, we exploit the slender aspect ratio of the ribbon ($L \gg W \gg t$). Rather than assuming local transverse stress gradients vanish arbitrarily, we define the macroscopic width-averaged stress fields $\bar{\sigma}_{ij}(u)$:
 \begin{equation}
     \bar{\sigma}_{uu}(u) = \frac{1}{W} \int_{-W/2}^{W/2} \sigma_{uu}(u,v)\,\mathrm{d}v, \quad \bar{\sigma}_{uv}(u) = \frac{1}{W} \int_{-W/2}^{W/2} \sigma_{uv}(u,v)\,\mathrm{d}v
 \end{equation}
 Integrating the axial equilibrium Equation~(\ref{eq:pde_sys_u}) across the ribbon width $W$ and dividing by $W$ yields:
 \begin{equation}\label{eq:avg_step_u}
-    \frac{\mathrm{d}\bar{\sigma}_{uu}}{\mathrm{d}u} + \frac{1}{W} \int_{-W/2}^{W/2} \frac{\partial \sigma_{uv}}{\partial v}\,\mathrm{d}v + A_u \bar{\sigma}_{uu} + B_u \bar{\sigma}_{uv} = 0
+    \frac{\mathrm{d}\bar{\sigma}_{uu}}{\mathrm{d}u} + \frac{1}{W} \int_{-W/2}^{W/2} \frac{\partial \sigma_{uv}}{\partial v}\,\mathrm{d}v + A_u \bar{\sigma}_{uu} + B_u \bar{\sigma}_{uv} + C_u \bar{\sigma}_{vv} = 0
 \end{equation}
 By the Fundamental Theorem of Calculus, the integral of the transverse gradient evaluates directly at the lateral boundaries:
 \begin{equation}
     \int_{-W/2}^{W/2} \frac{\partial \sigma_{uv}}{\partial v}\,\mathrm{d}v = \sigma_{uv}\left(u, +\frac{W}{2}\right) - \sigma_{uv}\left(u, -\frac{W}{2}\right) = 0 - 0 = 0
 \end{equation}
-Thus, the free-edge boundary condition (Eq.~\ref{eq:bc_free_edges}) analytically eliminates the transverse divergence term from the macroscopic axial balance. 
+Thus, the free-edge boundary condition (Eq.~\ref{eq:bc_free_edges}) analytically eliminates the transverse divergence term from the macroscopic axial balance. Furthermore, because the ribbon is narrow ($W \ll L$) and the lateral edges are free of transverse traction ($\sigma_{vv} = 0$ at $v = \pm W/2$), the width-averaged transverse normal stress is negligible globally ($\bar{\sigma}_{vv}(u) \approx 0$), allowing us to drop the $C_u$ and $C_v$ terms.
 
-Applying the same width-averaging procedure to Equation~(\ref{eq:pde_sys_v}) and noting that $\sigma_{vv}\left(u, \pm \frac{W}{2}\right) = 0$, the Beltrami-Michell compatibility equation becomes decoupled from the effective 1D membrane forces. The governing system collapses into a closed pair of ordinary differential equations for the width-averaged stresses $\bar{\sigma}_{uu}(u)$ and $\bar{\sigma}_{uv}(u)$:
+Applying the same width-averaging procedure to Equation~(\ref{eq:pde_sys_v}), the Beltrami-Michell compatibility equation becomes decoupled from the effective 1D membrane forces. The governing system collapses into a closed pair of ordinary differential equations for the width-averaged stresses $\bar{\sigma}_{uu}(u)$ and $\bar{\sigma}_{uv}(u)$:
 \begin{align}
     \frac{\mathrm{d}\bar{\sigma}_{uu}}{\mathrm{d}u} + A_u \bar{\sigma}_{uu} + B_u \bar{\sigma}_{uv} &= 0 \label{eq:ode_sys_u}\\
     \frac{\mathrm{d}\bar{\sigma}_{uv}}{\mathrm{d}u} + A_v \bar{\sigma}_{uu} + B_v \bar{\sigma}_{uv} &= 0 \label{eq:ode_sys_v}
 \end{align}
 
-
-To decouple the ODEs, we assume $A_v(x) \neq 0$ (which holds for all intermediate extensions where $\cos(2\phi) \neq 0$) and solve algebraically for $\sigma_{uu}$ using Equation~(\ref{eq:ode_sys_v}):
+To decouple the ODEs, we assume $A_v(x) \neq 0$ (which holds for all intermediate extensions where $\cos(2\phi) \neq 0$) and solve algebraically for $\bar{\sigma}_{uu}$ using Equation~(\ref{eq:ode_sys_v}):
 \begin{equation}\label{eq:sigma_uu_isolated}
-    \sigma_{uu} = -\frac{1}{A_v} \left( \frac{\mathrm{d}\sigma_{uv}}{\mathrm{d}u} + B_v \sigma_{uv} \right)
+    \bar{\sigma}_{uu} = -\frac{1}{A_v} \left( \frac{\mathrm{d}\bar{\sigma}_{uv}}{\mathrm{d}u} + B_v \bar{\sigma}_{uv} \right)
 \end{equation}
-Differentiating Equation~(\ref{eq:sigma_uu_isolated}) with respect to $u$ and substituting both expressions back into Equation~(\ref{eq:ode_sys_u}) yields a single second-order, linear, homogeneous ODE for the shear stress field $\sigma_{uv}(u)$:
+Differentiating Equation~(\ref{eq:sigma_uu_isolated}) with respect to $u$ and substituting both expressions back into Equation~(\ref{eq:ode_sys_u}) yields a single second-order, linear, homogeneous ODE for the width-averaged shear stress field $\bar{\sigma}_{uv}(u)$:
 \begin{equation}\label{eq:ode_second_order}
-    \frac{\mathrm{d}^2 \sigma_{uv}}{\mathrm{d}u^2} + (A_u + B_v) \frac{\mathrm{d}\sigma_{uv}}{\mathrm{d}u} + (A_u B_v - A_v B_u) \sigma_{uv} = 0
+    \frac{\mathrm{d}^2 \bar{\sigma}_{uv}}{\mathrm{d}u^2} + (A_u + B_v) \frac{\mathrm{d}\bar{\sigma}_{uv}}{\mathrm{d}u} + (A_u B_v - A_v B_u) \bar{\sigma}_{uv} = 0
 \end{equation}
 The characteristic polynomial of Equation~(\ref{eq:ode_second_order}) is $r^2 + (A_u + B_v)r + (A_u B_v - A_v B_u) = 0$. By the quadratic formula, the two longitudinal eigenvalues governing the capstan amplification simplify to:
 \begin{equation}\label{eq:eigenvalues_exact}
     \boxed{\lambda_{1,2}(x) = \frac{1}{2}\left[ -(A_u + B_v) \pm \sqrt{(A_u - B_v)^2 + 4 A_v B_u} \,\right]}
 \end{equation}
-% *(Note: Using the algebraic identity $(A_u+B_v)^2 - 4(A_u B_v - A_v B_u) \equiv (A_u - B_v)^2 + 4A_v B_u$, the discriminant is expressed in a manifestly clean form).*
+*(Note: Using the algebraic identity $(A_u+B_v)^2 - 4(A_u B_v - A_v B_u) \equiv (A_u - B_v)^2 + 4A_v B_u$, the discriminant is expressed in a manifestly clean form).*
 
-Assuming a strictly positive discriminant, the general closed-form solutions for the Cauchy stress fields along the ribbon are:
+Assuming a strictly positive discriminant, the general closed-form solutions for the width-averaged Cauchy stress fields along the ribbon are:
 \begin{align}
-    \boxed{\sigma_{uv}(u) = K_1 e^{\lambda_1(x) u} + K_2 e^{\lambda_2(x) u}} \label{eq:sigma_uv_sol_exact}\\
-    \boxed{\sigma_{uu}(u) = -\frac{1}{A_v} \left[ K_1 \big(\lambda_1(x) + B_v\big) e^{\lambda_1(x) u} + K_2 \big(\lambda_2(x) + B_v\big) e^{\lambda_2(x) u} \right]} \label{eq:sigma_uu_sol_exact}
+    \boxed{\bar{\sigma}_{uv}(u) = K_1 e^{\lambda_1(x) u} + K_2 e^{\lambda_2(x) u}} \label{eq:sigma_uv_sol_exact}\\
+    \boxed{\bar{\sigma}_{uu}(u) = -\frac{1}{A_v} \left[ K_1 \big(\lambda_1(x) + B_v\big) e^{\lambda_1(x) u} + K_2 \big(\lambda_2(x) + B_v\big) e^{\lambda_2(x) u} \right]} \label{eq:sigma_uu_sol_exact}
 \end{align}
 where $K_1$ and $K_2$ are integration constants ($\text{N/m}^2$) determined by the base clamping pre-tension at $u=0$.
 
 Finally, to derive the relationship between the global extension $x$ and the macroscopic pulling force measured by the Instron, we integrate the projected Cauchy stresses across the cross-sectional area ($W \times t$) at the active pulling edge ($u=L$). Using $\sin\phi = x/L$ and $\cos\phi = \sqrt{L^2 - x^2}/L$:
 \begin{align}
-    F(x) &= \int_{-\frac{W}{2}}^{\frac{W}{2}} t \left[ \sin(\phi)\,\sigma_{uu}(L) + \cos(\phi)\,\sigma_{uv}(L) \right] \mathrm{d}v \\
-    &= \frac{W t}{L} \left[ x\,\sigma_{uu}(L) + \sqrt{L^2 - x^2}\,\sigma_{uv}(L) \right]
+    F(x) &= \int_{-W/2}^{W/2} t \left[ \sin(\phi)\,\sigma_{uu}(L, v) + \cos(\phi)\,\sigma_{uv}(L, v) \right] \mathrm{d}v \\
+    &= W t \left[ \sin(\phi)\,\bar{\sigma}_{uu}(L) + \cos(\phi)\,\bar{\sigma}_{uv}(L) \right] \\
+    &= \frac{W t}{L} \left[ x\,\bar{\sigma}_{uu}(L) + \sqrt{L^2 - x^2}\,\bar{\sigma}_{uv}(L) \right]
 \end{align}
-Substituting Equations~(\ref{eq:sigma_uv_sol_exact}) and (\ref{eq:sigma_uu_sol_exact}) into the boundary integral and grouping the geometric projection factors into macroscopic amplitude prefactors ($N$):
+Substituting Equations~(\ref{eq:sigma_uv_sol_exact}) and (\ref{eq:sigma_uu_sol_exact}) into the boundary expression and grouping the geometric projection factors into macroscopic amplitude prefactors ($N$):
 \begin{equation}\label{eq:M_coeff}
     M_i(x) = \frac{W t K_i}{L} \left[ \sqrt{L^2 - x^2} - \frac{x}{A_v(x)}\big(\lambda_i(x) + B_v(x)\big) \right] \quad \text{for } i \in \{1,2\}
 \end{equation}
@@ -329,7 +326,6 @@ the macroscopic Instron force collapses into the exact closed-form double-expone
 \begin{equation}\label{eq:F_final_closed_form}
     \boxed{F(x) = M_1(x) e^{\lambda_1(x) L} + M_2(x) e^{\lambda_2(x) L}}
 \end{equation}
-
 
 % provided for reference, the explicit forms of the friction body forces $f_u$ and $f_v$ in terms of the stress components by plugging in everything are:
 % \begin{equation}\label{eq:f_u}
