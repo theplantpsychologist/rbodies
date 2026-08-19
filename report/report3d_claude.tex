@@ -132,71 +132,29 @@ Two features of Eq.~\eqref{eq:frame_rotation_rates} are worth flagging because t
 
 
 \section{Stress balance}\label{sec:equilibrium}
-We will model the paper yoyo as a thin shell of small but finite thickness $t\ll r$. Because the ribbon's thickness ultimately carries the boundary tractions responsible for friction (Section~\ref{sec:friction}), we work throughout with its full three-dimensional stress state. We use $\zeta\in[-t/2,t/2]$ for the coordinate measuring position through the thickness, i.e., displacement from the mid-surface along $\hat r$: a general material point is at $\vec p(u,v,x)+\zeta\hat r(u,v)$, with $\vec p(u,v,x)$ the mid-surface position of Eq.~\eqref{eq:position}.
-
-\subsection{The stress tensor}\label{sec:six_unknowns}
-At a point $(u,v,\zeta)$ the material carries the full Cauchy stress tensor
+We will model the paper yoyo as a thin shell of small but finite thickness $t\ll r$. Because the ribbon's thickness ultimately carries the boundary tractions responsible for friction (Section~\ref{sec:friction}), we work throughout with its full three-dimensional stress state. We use $\zeta\in\left[-\frac{t}{2},\frac{t}{2}\right]$ for the coordinate measuring position through the thickness, i.e., displacement from the mid-surface along $\hat r$: a general material point is at $\vec p(u,v,x)+\zeta\hat r(u,v)$, with $\vec p(u,v,x)$ the mid-surface position of Eq.~\eqref{eq:position}. At a point $(u,v,\zeta)$ the material carries the full Cauchy stress tensor
 \begin{equation}
     \sigma = \begin{pmatrix}\sigma_{uu}&\sigma_{uv}&\sigma_{ur}\\ \sigma_{uv}&\sigma_{vv}&\sigma_{vr}\\ \sigma_{ur}&\sigma_{vr}&\sigma_{rr}\end{pmatrix}.
 \end{equation}
 There are six independent components: the in-plane stresses $\sigma_{uu},\sigma_{uv},\sigma_{vv}$; the transverse shears $\sigma_{ur},\sigma_{vr}$, by which the ribbon can transmit a load sideways from one part of its width to another; and $\sigma_{rr}$, the normal pressure caused by layer-layer contact at the ribbon's surface.
 
-Static equilibrium gives three scalar force-balance equations, one per direction; we derive them in Sections~\ref{sec:inplane_full} and~\ref{sec:outofplane_full}. For now, we leave the boundary tractions at $\zeta=\pm t/2$ --- that is, the friction and contact pressures transmitted between neighboring wound layers --- as unknown functions of $(u,v)$ of unspecified direction and magnitude, to be determined in Section~\ref{sec:friction}; nothing in Sections~\ref{sec:inplane_full}--\ref{sec:outofplane_full} depends on that determination.
-
-\subsection{In-plane force balance}\label{sec:inplane_full}
-We perform a force balance on a differential volume element $\mathrm du\times\mathrm dv\times\mathrm d\zeta$. On each of its six faces there is a traction vector: on the $u$-face (outward normal $\hat u$), the traction is $\vec t_u=\sigma_{uu}\hat u+\sigma_{uv}\hat v+\sigma_{ur}\hat r$, and similarly $\vec t_v=\sigma_{uv}\hat u+\sigma_{vv}\hat v+\sigma_{vr}\hat r$ on the $v$-face and $\vec t_\zeta=\sigma_{ur}\hat u+\sigma_{vr}\hat v+\sigma_{rr}\hat r$ on the $\zeta$-face. Because $t\ll r$, the area of each face is independent of $\zeta$ ($\mathrm dv\,\mathrm d\zeta$, $\mathrm du\,\mathrm d\zeta$, $\mathrm du\,\mathrm dv$ respectively), so the net force on the element is
+We perform a force balance on a differential volume element $\mathrm du\times\mathrm dv\times\mathrm d\zeta$. On each of its six faces there is a traction vector: on the $u$-face (outward normal $\hat u$), the traction is $\vec t_u=\sigma_{uu}\hat u+\sigma_{uv}\hat v+\sigma_{ur}\hat r$, and similarly $\vec t_v=\sigma_{uv}\hat u+\sigma_{vv}\hat v+\sigma_{vr}\hat r$ on the $v$-face and $\vec t_\zeta=\sigma_{ur}\hat u+\sigma_{vr}\hat v+\sigma_{rr}\hat r$ on the $\zeta$-face. Because $t\ll r$, the element can be approximated as a rectangular prism, so the net force on the element is
 \begin{equation}
     \left(\frac{\partial\vec t_u}{\partial u}+\frac{\partial\vec t_v}{\partial v}+\frac{\partial\vec t_\zeta}{\partial\zeta}\right)\mathrm du\,\mathrm dv\,\mathrm d\zeta = 0.
 \end{equation}
-Because $\hat u,\hat v,\hat r$ themselves depend on $u,v$ (Eq.~\ref{eq:frame_rotation_rates}), differentiating $\vec t_u,\vec t_v$ produces extra terms beyond the plain derivatives of the stress components, in every direction alike ($\hat u$, $\hat v$, and, as Section~\ref{sec:outofplane_full} shows, $\hat r$ too). We work out the $\hat u$-component first; the $\hat v$-component follows by an identical argument, swapping $u\leftrightarrow v$ throughout (and, since $\kappa_{uv}=\kappa_{vu}$, changing only the sign on the cross term). Collecting the $\hat u$-component of the sum (using Eq.~\ref{eq:frame_rotation_rates}; $\hat u,\hat v$ do not depend on $\zeta$ to leading order in $t/r$) gives
-\begin{equation}\label{eq:inplane_u_full}
-    \frac{\partial\sigma_{uu}}{\partial u}+\frac{\partial\sigma_{uv}}{\partial v}+\frac{\partial\sigma_{ur}}{\partial\zeta} + \kappa_{uu}\sigma_{ur} - \kappa_{uv}\sigma_{vr} = 0.
+However, because $\hat u,\hat v,\hat r$ themselves depend on $u,v$ (Eq.~\ref{eq:frame_rotation_rates}), differentiating $\vec t_u,\vec t_v,\vec t_\zeta$ produces extra terms beyond the plain derivatives of the stress components. For example, expanding $\frac{\partial}{\partial u}(\sigma_{uu}\hat u)$ includes a curvature-weighted term in the $\hat r$ direction,
+\begin{equation}
+    \frac{\partial}{\partial u} (\sigma_{uu} \hat u) = \frac{\partial \sigma_{uu}}{\partial u}\hat u + \sigma_{uu}\frac{\partial \hat u}{\partial u}
+    = \frac{\partial \sigma_{uu}}{\partial u}\hat u - \kappa_{uu}\sigma_{uu}\hat r,
 \end{equation}
-This equation contains two kinds of term involving the transverse shears: their own $\zeta$-derivative, and a curvature-weighted contribution ($\kappa_{uu}\sigma_{ur}$, etc.) with no derivative at all. The $\zeta$-derivative term must be kept --- integrating it through the thickness is exactly how the boundary tractions of Section~\ref{sec:friction} enter the in-plane balance, and dropping it would silently discard the friction mechanism entirely. The curvature-weighted terms, however, are negligible: transverse shear stresses in a thin shell are smaller than the in-plane stresses by a factor of order $t/\ell$, where $\ell$ is the shortest relevant length scale of variation (a standard thin-shell scaling result). A term like $\kappa_{uu}\sigma_{ur}\sim(1/r)\cdot\sigma_{uu}(t/\ell)$ is then smaller than the leading in-plane term $\partial\sigma_{uu}/\partial u\sim\sigma_{uu}/\ell$ by a factor of $t/r$, which is small for a thin ribbon ($t\ll r$) regardless of $\ell$. Dropping these two terms, Eq.~\eqref{eq:inplane_u_full} becomes
-\begin{equation}\label{eq:inplane_reduced}
-    \frac{\partial\sigma_{uu}}{\partial u}+\frac{\partial\sigma_{uv}}{\partial v}+\frac{\partial\sigma_{ur}}{\partial\zeta} \approx 0,
-\end{equation}
-and, by the $u\leftrightarrow v$ symmetry noted above,
-\begin{equation}\label{eq:inplane_v_full}
-    \frac{\partial\sigma_{uv}}{\partial u}+\frac{\partial\sigma_{vv}}{\partial v}+\frac{\partial\sigma_{vr}}{\partial\zeta} \approx 0.
-\end{equation}
-Integrating each of these through the thickness ($\int_{-t/2}^{t/2}\mathrm d\zeta$) and using the Fundamental Theorem of Calculus on the $\zeta$-derivative term gives
-\begin{equation}\label{eq:N_balance}
-    \boxed{
-    \frac{\partial N_{uu}}{\partial u}+\frac{\partial N_{uv}}{\partial v} + f_u(u,v) = 0, \qquad f_u := \sigma_{ur}(\zeta{=}t/2)-\sigma_{ur}(\zeta{=}{-}t/2),
-    }
-\end{equation}
-where $N_{uu}:=\int\sigma_{uu}\,\mathrm d\zeta$, etc., are the thickness-integrated stress resultants, and the identical steps for the $\hat v$-component define $f_v$ analogously. The quantity $f_u$ is exactly the \emph{difference of the two contact tractions} on the ribbon's top and bottom surfaces --- physically, the net friction transmitted by the neighboring wound layers --- and Eq.~\eqref{eq:N_balance} holds regardless of what that difference turns out to be. Section~\ref{sec:friction} is entirely devoted to determining $f_u,f_v$; nothing above depends on the outcome. We box Eq.~\eqref{eq:N_balance} because, together with its out-of-plane counterpart (Section~\ref{sec:outofplane_full}) and the friction law itself, it survives essentially unchanged into the final closed system of Section~\ref{sec:closed_form}.
-
-In the further idealized limit of an infinitesimally thin membrane --- where the stresses do not vary through the thickness at all ($N_{uu}\to\sigma_{uu}t$, etc.), and the boundary-traction difference $f_u$ is simply treated as a prescribed force per unit volume rather than derived from a resolved thickness --- Eq.~\eqref{eq:N_balance} (divided through by $t$) reduces to the elementary two-component balance
+the additional curvature-weighted terms reflecting the fact that the element is not perfectly planar, so in-plane stresses are slightly rotated to have a small out-of-plane component, and vice versa. Expanding every term this way (using Eq.~\ref{eq:frame_rotation_rates} throughout) and sorting by component gives three scalar force-balance equations, exact to leading order in $\frac{t}{r}$:
 \begin{align}
-    \frac{\partial \sigma_{uv}}{\partial v} + \frac{\partial \sigma_{uu}}{\partial u} + f_u &= 0, \label{eq:force_u}\\
-    \frac{\partial \sigma_{uv}}{\partial u} + \frac{\partial \sigma_{vv}}{\partial v} + f_v &= 0. \label{eq:force_v}
+    \hat u:\quad &\boxed{\frac{\partial\sigma_{uu}}{\partial u}+\frac{\partial\sigma_{uv}}{\partial v}+\frac{\partial\sigma_{ur}}{\partial\zeta} + \kappa_{uu}\sigma_{ur} - \kappa_{uv}\sigma_{vr} = 0} \label{eq:inplane_u_full}\\
+    \hat v:\quad &\boxed{\frac{\partial\sigma_{uv}}{\partial u}+\frac{\partial\sigma_{vv}}{\partial v}+\frac{\partial\sigma_{vr}}{\partial\zeta} - \kappa_{uv}\sigma_{ur} + \kappa_{vv}\sigma_{vr} = 0} \label{eq:inplane_v_full}\\
+    \hat r:\quad &\boxed{\frac{\partial\sigma_{ur}}{\partial u}+\frac{\partial\sigma_{vr}}{\partial v}+\frac{\partial\sigma_{rr}}{\partial\zeta} - \kappa_{uu}\sigma_{uu}+2\kappa_{uv}\sigma_{uv}-\kappa_{vv}\sigma_{vv} = 0} \label{eq:outofplane_r_full}
 \end{align}
-We leave this simpler pair unboxed --- it is not itself part of the final system, only a limit of it --- but keep it on hand for comparison in Section~\ref{sec:compatibility}.
 
-\subsection{Out-of-plane force balance}\label{sec:outofplane_full}
-The same volume-element balance used above has an $\hat r$-component too. Physically, the frame $(\hat u,\hat v)$ tilts slightly as one moves from one side of a volume element to the opposite side --- exactly as, for instance, uniform tension in a curved rope produces a net inward force --- so even a spatially uniform in-plane stress produces a net radial force, purely because the element itself is not flat. This curvature-induced force is what the ribbon's own curvature-induced pressure ultimately balances against the contact pressure transmitted by the neighboring wound layers, through $\sigma_{rr}$.
-
-Repeating the same traction-vector bookkeeping as Section~\ref{sec:inplane_full}, but now collecting the $\hat r$-component of $\partial\vec t_u/\partial u+\partial\vec t_v/\partial v+\partial\vec t_\zeta/\partial\zeta=0$ (again using Eq.~\ref{eq:frame_rotation_rates} for how $\hat u,\hat v,\hat r$ rotate into one another) gives, by the identical procedure,
-\begin{equation}\label{eq:outofplane_full}
-    \frac{\partial\sigma_{ur}}{\partial u}+\frac{\partial\sigma_{vr}}{\partial v}+\frac{\partial\sigma_{rr}}{\partial\zeta} - \kappa_{uu}\sigma_{uu}+2\kappa_{uv}\sigma_{uv}-\kappa_{vv}\sigma_{vv} = 0.
-\end{equation}
-Here $-\kappa_{uu}\sigma_{uu}+2\kappa_{uv}\sigma_{uv}-\kappa_{vv}\sigma_{vv}$ plays the role the curvature-weighted terms played in Eq.~\eqref{eq:inplane_u_full} --- except here we do \emph{not} get to drop the leading terms $\partial\sigma_{ur}/\partial u,\partial\sigma_{vr}/\partial v$: these are exactly the terms responsible for carrying load sideways in $v$ (the mechanism absent from a pure membrane treatment), and whether they are negligible depends on the length scale $\ell$ over which $\sigma_{ur},\sigma_{vr}$ vary --- small far from any edge, but not necessarily small near the overhang boundary, which is the entire reason for introducing them in the first place.
-
-\paragraph{The pure-membrane limit.} Dropping $\sigma_{ur},\sigma_{vr}$ entirely --- the same idealized limit used for Eq.~\eqref{eq:force_u} --- reduces Eq.~\eqref{eq:outofplane_full} to $\partial\sigma_{rr}/\partial\zeta = \kappa_{uu}\sigma_{uu}+\kappa_{vv}\sigma_{vv}-2\kappa_{uv}\sigma_{uv}$. The right-hand side, multiplied by $r$ to work with a quantity of ordinary Cauchy stress dimensions ($\text{N/m}^2$) rather than stress-per-length, is exactly the effective clamping pressure that a pure membrane treatment would balance against the contact pressure of the neighboring wound layers (Section~\ref{sec:friction}); we call it $P$:
-\begin{equation}\label{eq:p}
-    \boxed{P := \sigma_{uu} \cos^2\phi + \sigma_{vv} \sin^2\phi - \sigma_{uv} \sin(2\phi)}
-\end{equation}
-(using $\kappa_{uu}=\cos^2\phi/r$, $\kappa_{vv}=\sin^2\phi/r$, $\kappa_{uv}=\sin\phi\cos\phi/r$, Eq.~\ref{eq:curvatures}). In this limit $P$ is nothing but $\sigma_{rr}$ itself, up to sign: $\sigma_{rr}=-P$, so that compression ($\sigma_{rr}<0$) corresponds to a positive clamping pressure ($P>0$). We introduce the separate symbol $P$, rather than writing $\sigma_{rr}$ everywhere, purely for convenience: it keeps the sign non-negative throughout (useful later, e.g.\ the monotonicity argument of Eq.~\ref{eq:P_nonneg_proof}), and its two boundary values, $P_{in}:=-\sigma_{rr}(u,v,-t/2)$ and $P_{out}:=-\sigma_{rr}(u,v,+t/2)$ (Eq.~\ref{eq:Pcontact_bc}), read more naturally as ``the pressure felt from the inner/outer neighbor'' than the equivalent statements written directly in $\sigma_{rr}$. We box Eq.~\eqref{eq:p} because $P$ is the quantity that does the work throughout Section~\ref{sec:friction} and Section~\ref{sec:closed_form}.
-
-\paragraph{Can $\sigma_{rr}$ be treated as uniform through the thickness?} Equation~\eqref{eq:outofplane_full} shows $\sigma_{rr}$ is \emph{not} exactly constant in $\zeta$ in general: its $\zeta$-derivative equals $P/r$ minus the shear-divergence term. However, since $P/r\sim\sigma_{uu}/r$ and this is integrated over only the thin range $\zeta\in[-t/2,t/2]$, the resulting \emph{change} in $\sigma_{rr}$ across the thickness is of order $(\sigma_{uu}/r)\cdot t = \sigma_{uu}\cdot(t/r)$ --- small compared to $\sigma_{uu}$ itself for a thin ribbon. Treating $\sigma_{rr}$ (and by the same argument $\sigma_{ur},\sigma_{vr}$) as approximately uniform through the thickness is therefore a controlled, leading-order approximation, \emph{provided} we track the resulting $O(t/r)$ correction explicitly rather than discard it silently: it is exactly what distinguishes the pressure available from an inner neighbor from that available from an outer one, which is the entire content of the friction law. We return to this in Section~\ref{sec:friction_revisited}.
-
-Under this approximation, the physical contact conditions become direct boundary conditions on $\sigma_{rr}$ at the ribbon's two surfaces: at $\zeta=+t/2$ (facing the outer neighbor, if present) and $\zeta=-t/2$ (facing the inner neighbor, if present), continuity of traction across a contact interface (Newton's Third Law applied to the two touching surfaces) requires $\sigma_{rr}$ there to equal the actual contact pressure, with sign such that compression corresponds to $\sigma_{rr}<0$ (the standard tension-positive stress convention):
-\begin{equation}\label{eq:Pcontact_bc}
-    \sigma_{rr}(u,v,{+}t/2) = -P_{out}(u,v), \qquad \sigma_{rr}(u,v,{-}t/2) = -P_{in}(u,v),
-\end{equation}
-with $P_{in},P_{out}\ge0$ (a surface can only push, not pull). Where no neighbor is present on a given side, the corresponding pressure is simply zero.
+Equilibrium alone gives three equations for six unknown stress components. Because $t$ is small, however, we make a first-order approximation that each stress component varies linearly through $t$: knowing its two boundary values at $\zeta=\pm\frac{t}{2}$, for every $(u,v)$, is then equivalent to knowing the full through-thickness profile. Section~\ref{sec:friction} supplies exactly those boundary values for $\sigma_{ur},\sigma_{vr},\sigma_{rr}$, from layer-layer contact; Section~\ref{sec:closed_form} carries out the thickness integration itself, retaining --- rather than dropping --- the curvature-weighted terms above.
 
 \begin{figure}
 \centering
@@ -206,18 +164,17 @@ with $P_{in},P_{out}\ge0$ (a surface can only push, not pull). Where no neighbor
 
 
 \section{Friction}\label{sec:friction}
-Sections~\ref{sec:inplane_full}--\ref{sec:outofplane_full} left the boundary tractions at $\zeta=\pm t/2$ --- equivalently, the quantities $f_u,f_v$ of Eq.~\eqref{eq:N_balance} and $P_{in},P_{out}$ of Eq.~\eqref{eq:Pcontact_bc} --- entirely unspecified. We now determine them: first the slip direction based on the layer kinematics, and then their magnitude based on Coulomb friction applied to the contact pressure of Section~\ref{sec:outofplane_full}.
 
 \subsection{Overlapping neighbors}\label{sec:neighbors}
-Because the ribbon is wound around itself, a given area element at $(u,v)$ could physically overlap with another area element one full turn away along the ribbon. Specifically, an area element at point $(u,v)$ overlaps with the neighboring interior layer at point $(u^-,v^-)$ if their cylindrical coordinates have equal $r$ and $z$, but differ by one full turn in $\theta$. In terms of the physical (arc-length) displacement between the two points, this is
+Because the ribbon is wound around itself, a given area element at $(u,v)$ could physically overlap with another area element one full turn away along the ribbon. Specifically, an area element at point $(u,v)$ overlaps with the neighboring interior layer at point $(u^-,v^-)$ if their cylindrical coordinates have equal $r$ and $z$, but differ by one full turn in $\theta$. We can express this by taking the difference in $\vec{p}$:
 \begin{equation}
     \vec{p}(u,v,x) - \vec{p}(u^-,v^-,x) = \begin{bmatrix}
         0\\
         2\pi\\
         0
-    \end{bmatrix}, \qquad\text{i.e., a $\theta$-difference of exactly one full turn.}
+    \end{bmatrix}.
 \end{equation}
-Plugging in Eq.~\eqref{eq:position} --- $\theta(u,v)=(u\cos\phi-v\sin\phi)/r$, $z(u,v)=u\sin\phi+v\cos\phi$ --- turns this into the linear system $\big(\Delta u\cos\phi-\Delta v\sin\phi\big)/r=2\pi$, $\Delta u\sin\phi+\Delta v\cos\phi=0$ for $\Delta u:=u^--u,\Delta v:=v^--v$, with solution
+Plugging in Eq.~\eqref{eq:position} gives
 \begin{align}
     u^- &= u - 2\pi r \cos \phi,\label{eq:uminus}\\
     v^- &= v + 2\pi r \sin \phi.\label{eq:vminus}
@@ -227,8 +184,13 @@ By the identical argument with $\theta(u^+,v^+)=\theta(u,v)+2\pi$ (i.e., the nei
     u^+ &= u + 2\pi r \cos \phi,\label{eq:uplus}\\
     v^+ &= v - 2\pi r \sin \phi.\label{eq:vplus}
 \end{align}
+We neglect edge effects where $u^-$ or $u^+$ falls outside the $[0,L]$ bounds --- there is simply no material wound that far, regardless of $v$. Within $[0,L]$, an inner neighbor is present exactly whenever $v^-$ lies within $\left[-\frac{W}{2},\frac{W}{2}\right]$, and an outer neighbor is present exactly whenever $v^+$ lies in $\left[-\frac{W}{2},\frac{W}{2}\right]$, i.e.,
+\begin{align}
+    \text{Inner neighbor present}&\quad\Longleftrightarrow\quad v\le \frac{W}{2}-2\pi r \sin\phi, \label{eq:overlap_in}\\
+    \text{Outer neighbor present}&\quad\Longleftrightarrow\quad v\ge -\frac{W}{2}+2\pi r \sin\phi. \label{eq:overlap_out}
+\end{align}
 
-\subsection{Relative slip direction}\label{sec:slip_direction}
+\subsection{Friction direction and magnitude}\label{sec:slip_direction}
 The position vector $\vec p(u,v,x)$ of a material point $(u,v)$ is given by Eq.~\eqref{eq:position}. Substituting Eq.~\eqref{eq:phi} and Eq.~\eqref{eq:r} to expose the dependence on $x$ gives
 \begin{equation}
     \vec{p}(u,v,x) =
@@ -281,214 +243,163 @@ The prefactor is strictly positive for all $x \in (0,L)$. Therefore, the relativ
 \begin{equation}\label{eq:friction_direction}
     \hat{f} = -\begin{bmatrix} \sin(2\phi) \\ \cos(2\phi) \end{bmatrix}.
 \end{equation}
-Recall that this is the friction exerted on the element by the inner layer, which resists the element from sliding forward with $x$. By the same argument, the friction exerted by the outer layer is the exact opposite, dragging the element forward.
+Recall that this is the friction exerted on the element by the inner layer, which resists the element from sliding forward with $x$. The components of this friction force are equivalent to the shear stresses acting on the inner ($-\hat r$) face. The magnitude of the Coulomb friction force is $\mu$ times the normal pressure $-\sigma_{rr}$ on that face; writing it this way presumes $\sigma_{rr}\le0$ (the element is under compression), which we verify self-consistently once the system is solved (Section~\ref{sec:closed_form}). Therefore,
+\begin{align}
+    \sigma_{ur}\left(\zeta = -\frac{t}{2}\right) &= -\mu \sigma_{rr}\left(\zeta = -\frac{t}{2}\right)\sin(2\phi), \label{eq:sigma_ur_inner}\\
+    \sigma_{vr}\left(\zeta = -\frac{t}{2}\right) &= -\mu \sigma_{rr}\left(\zeta = -\frac{t}{2}\right)\cos(2\phi). \label{eq:sigma_vr_inner}
+\end{align}
+By the same argument, the friction exerted by the outer layer is the exact opposite, dragging the element forward, giving the corresponding relationship on the outer ($+\hat r$) face (the sign does not flip, due to the sign convention for shear stresses on opposite faces of an element):
+\begin{align}
+    \sigma_{ur}\left(\zeta = \frac{t}{2}\right) &= -\mu \sigma_{rr}\left(\zeta = \frac{t}{2}\right)\sin(2\phi), \label{eq:sigma_ur_outer}\\
+    \sigma_{vr}\left(\zeta = \frac{t}{2}\right) &= -\mu \sigma_{rr}\left(\zeta = \frac{t}{2}\right)\cos(2\phi). \label{eq:sigma_vr_outer}
+\end{align}
+Each pair holds only where the corresponding neighbor is actually present (Eq.~\ref{eq:overlap_in}--\ref{eq:overlap_out}); where the neighbor is absent, both shear components vanish along with the contact pressure that would otherwise drive them.
 
-\subsection{Magnitude and domain of the friction force}\label{sec:friction_revisited}
-We now determine the magnitude and the area over which the friction force acts, by attributing it directly to boundary tractions in $\sigma_{ur},\sigma_{vr}$ at each of the ribbon's two surfaces --- exactly the unknown quantities left open in Eq.~\eqref{eq:N_balance}.
-
-At $\zeta=+t/2$, the traction exerted on the ribbon by its outer neighbor has $u$-component $\sigma_{ur}(u,v,t/2)$ (by definition of the Cauchy traction on the outward-normal face). Since the outer neighbor slips forward relative to this element and drags it forward (Section~\ref{sec:slip_direction}), this traction is $+\mu P_{out}$ (Coulomb's law) times the forward slip-direction component, i.e.
-\begin{equation}\label{eq:sigma_ur_outer}
-    \sigma_{ur}(u,v,{+}t/2) = \mu P_{out}(u,v)\sin(2\phi), \qquad \sigma_{vr}(u,v,{+}t/2)=\mu P_{out}(u,v)\cos(2\phi),
+\subsection{Layer-layer contact relationship}\label{sec:layer_layer_contact}
+By Newton's third law, two surfaces in contact experience equal and opposite traction; because their outward normals point in opposite directions, this means their normal stresses must agree. It suffices to match $\sigma_{rr}$ alone, since the transverse shears at each surface are already tied to it by Eqs.~\eqref{eq:sigma_ur_inner}--\eqref{eq:sigma_vr_outer}. This gives a recursive relationship for the boundary values of $\sigma_{rr}$, using the same piecewise gates as Eq.~\eqref{eq:overlap_in}--\eqref{eq:overlap_out}:
+\begin{align}
+    \text{Outer surface:}&\quad \sigma_{rr}\left(u,v,\zeta=\frac{t}{2}\right) = \begin{cases}
+        \sigma_{rr}\left(u^+,v^+,\zeta=-\frac{t}{2}\right) & v \ge -\frac{W}{2}+2\pi r\sin\phi\\
+        0 &\text{otherwise}
+    \end{cases}\label{eq:contact_outer}\\
+    \text{Inner surface:}&\quad \sigma_{rr}\left(u,v,\zeta=-\frac{t}{2}\right) = \begin{cases}
+        \sigma_{rr}\left(u^-,v^-,\zeta=\frac{t}{2}\right) & v \le \frac{W}{2}-2\pi r\sin\phi\\
+        0 &\text{otherwise}
+    \end{cases}\label{eq:contact_inner}
+\end{align}
+(the outer face of this element touches the \emph{inner} face of its outer neighbor at $(u^+,v^+)$, and the inner face touches the \emph{outer} face of its inner neighbor at $(u^-,v^-)$ --- note the two relations reference opposite neighbors, matching Section~\ref{sec:neighbors}). Equations~\eqref{eq:contact_outer}--\eqref{eq:contact_inner} recursively relate the boundary stress of one layer to that of its neighbor, one full turn away; propagated far enough in $u$, they reach the outermost wound layer at $u=L$, past which no material is wound at all (Section~\ref{sec:neighbors}), so
+\begin{equation}
+    \sigma_{rr}\left(u=L,v,+\frac{t}{2}\right)=0 \quad\text{for all }v,
 \end{equation}
-where an outer neighbor is present, and zero otherwise. At $\zeta=-t/2$, the traction on the ribbon from the inner neighbor points in the opposite direction to oppose slip:
-\begin{equation}\label{eq:sigma_ur_inner}
-    \sigma_{ur}(u,v,{-}t/2) = \mu P_{in}(u,v)\sin(2\phi), \qquad \sigma_{vr}(u,v,{-}t/2)=\mu P_{in}(u,v)\cos(2\phi),
-\end{equation}
-again valid only where an inner neighbor is present. Note that the sign of the expression does not flip due to the sign convention for shear stresses. Using Eq.~\eqref{eq:Pcontact_bc}, both reduce to the same functional form, $\sigma_{ur}=-\mu\sigma_{rr}\sin(2\phi)$, $\sigma_{vr}=-\mu\sigma_{rr}\cos(2\phi)$, evaluated at whichever surface is in contact, as a direct relation between the shear and normal tractions at each surface.
-
-\subsection{Overlap conditions}
-We neglect edge effects where $u^-,u^+$ could be outside the $[0,L]$ bounds. As a result, an inner neighbor is present exactly whenever $v^-$ lies within $[-W/2,W/2]$, i.e.\ (using Eq.~\ref{eq:vminus}) whenever $v\le v_c^{in}(\phi):=\frac{W}{2}-\Delta v$, and an outer neighbor is present exactly whenever $v^+$ lies within $[-W/2,W/2]$, i.e.\ whenever $v\ge v_c^{out}(\phi):=-\frac{W}{2}+\Delta v$, with $\Delta v:=2\pi r\sin\phi$.
-
-Both thresholds are stated purely in terms of $\phi$, and together they partition the width into (up to) three bands: inner only, outer only, and either both or neither. Every combination is accommodated automatically by evaluating the two conditions independently.
-
-Once the width-integrated equilibrium equation of Section~\ref{sec:inplane_full} (Eq.~\ref{eq:N_balance}) is used to connect $N_{uu}=\int\sigma_{uu}\,\mathrm d\zeta$ back to the boundary-traction difference $\sigma_{ur}(t/2)-\sigma_{ur}(-t/2)$, the total, effective friction force entering that equation is the \emph{sum} of the two independent, piecewise contributions above:
-\begin{equation}\label{eq:friction_two_piece}
-    \boxed{
-    \begin{aligned}
-    f_u(u,v) &= \underbrace{\begin{cases}\mu P_{out}(u,v)\sin(2\phi) & v\ge v_c^{out}(\phi)\\ 0 & \text{otherwise}\end{cases}}_{\text{outer neighbor, forward drag}}
-    \ - \
-    \underbrace{\begin{cases}\mu P_{in}(u,v)\sin(2\phi) & v\le v_c^{in}(\phi)\\ 0 & \text{otherwise}\end{cases}}_{\text{inner neighbor, backward drag}}, \\[4pt]
-    f_v(u,v) &= \underbrace{\begin{cases}\mu P_{out}(u,v)\cos(2\phi) & v\ge v_c^{out}(\phi)\\ 0 & \text{otherwise}\end{cases}}_{\text{outer neighbor, forward drag}}
-    \ - \
-    \underbrace{\begin{cases}\mu P_{in}(u,v)\cos(2\phi) & v\le v_c^{in}(\phi)\\ 0 & \text{otherwise}\end{cases}}_{\text{inner neighbor, backward drag}}.
-    \end{aligned}
-    }
-\end{equation}
-We assume $P_{in},P_{out}\ge0$, deferring a rigorous justification to Section~\ref{sec:closed_form} (Eq.~\ref{eq:P_nonneg_proof}). We box Eq.~\eqref{eq:friction_two_piece} together with Eq.~\eqref{eq:N_balance} and Eq.~\eqref{eq:p}, since these are exactly the relations that let $\sigma_{ur},\sigma_{vr},\sigma_{rr}$ be eliminated in favor of $\sigma_{uu},\sigma_{uv},\sigma_{vv}$ once compatibility closes the system (Section~\ref{sec:count} makes this elimination explicit).
-% NOTE: mu/r removed here (2026-08-17) to fix a units mismatch (sigma_ur must be Pa, not Pa/m). This scaling still appears with the old mu/r form throughout Section~\ref{sec:closed_form} (kappa(x), A_u, B_u, etc.) via eq:f_smoothed and downstream -- those need the same fix before Section~\ref{sec:closed_form} is revisited.
+regardless of the $v$-condition in Eq.~\eqref{eq:contact_outer} --- there is simply nothing at $(u^+,v^+)$ to be in contact with. This is the base case that starts the recursion. Note that Eqs.~\eqref{eq:contact_outer}--\eqref{eq:contact_inner} are pure \emph{matching} conditions between neighbors: they say nothing yet about what value $\sigma_{rr}$ actually takes away from this base case. Section~\ref{sec:closed_form} supplies the piece that does.
 
 
-\section{Compatibility}\label{sec:compatibility}
-\subsection{Where this leaves the count}\label{sec:count}
-We now have three verified equilibrium equations---Eq.~\eqref{eq:inplane_u_full}, \eqref{eq:inplane_v_full} (or their reduced forms, Eq.~\ref{eq:inplane_reduced}), and \eqref{eq:outofplane_full}---for six unknown stress components. This is short exactly three equations, and it is worth being precise about how that gap actually closes, since it is \emph{not} that three brand-new independent equations appear from nowhere to match the missing three. Rather, three of the six unknowns are eliminated entirely before compatibility is ever needed:
-\begin{itemize}
-    \item The uniform-through-thickness approximation of Section~\ref{sec:outofplane_full} reduces $\sigma_{ur},\sigma_{vr},\sigma_{rr}$, to leading order in $t/r$, from full $(u,v,\zeta)$-dependent fields to a single pair of boundary values each, at $\zeta=\pm t/2$.
-    \item Those boundary values are then pinned down explicitly, not left free: Coulomb friction and Newton's Third Law fix $\sigma_{ur},\sigma_{vr}$ via Eqs.~\eqref{eq:sigma_ur_outer}--\eqref{eq:sigma_ur_inner}, and fix $\sigma_{rr}$ via Eq.~\eqref{eq:Pcontact_bc} together with the definition of $P$ (Eq.~\ref{eq:p}) --- both entirely in terms of $\sigma_{uu},\sigma_{uv},\sigma_{vv}$.
-\end{itemize}
-So $\sigma_{ur},\sigma_{vr},\sigma_{rr}$ never appear as independent unknowns in the final system at all: they are substituted away, leaving exactly $\sigma_{uu},\sigma_{uv},\sigma_{vv}$ (or, after thickness-averaging, $\hat\sigma_{uu},\hat\sigma_{uv},\hat\sigma_{vv}$) as the genuine remaining unknowns. Those are governed by two equilibrium equations (Eq.~\ref{eq:N_balance}, or its membrane limit Eq.~\ref{eq:force_u}) --- now correctly sourced by the boundary-traction friction of Eq.~\eqref{eq:friction_two_piece} rather than assumed as an external body force --- which is exactly the classic, two-equations-for-three-unknowns gap of plane-stress equilibrium. The one remaining equation must come from a constitutive law (Hooke's law) plus the kinematic compatibility of the mid-surface strain field, derived next.
-
-\subsection{Thickness-averaged in-plane stresses}
-Define the thickness average $\hat\sigma_{uu}(u,v):=\frac1t\int_{-t/2}^{t/2}\sigma_{uu}\,\mathrm d\zeta = N_{uu}(u,v)/t$, and likewise $\hat\sigma_{uv},\hat\sigma_{vv}$, using the resultants $N_{uu}=\int\sigma_{uu}\,\mathrm d\zeta$ introduced in Section~\ref{sec:inplane_full}. Dividing Eq.~\eqref{eq:N_balance} through by $t$, and repeating the identical steps for the $\hat v$-component of Eq.~\eqref{eq:inplane_reduced}, gives
-\begin{equation}\label{eq:inplane_hat}
-    \boxed{
-    \frac{\partial\hat\sigma_{uu}}{\partial u}+\frac{\partial\hat\sigma_{uv}}{\partial v}+\frac{f_u(u,v)}{t} = 0, \qquad
-    \frac{\partial\hat\sigma_{uv}}{\partial u}+\frac{\partial\hat\sigma_{vv}}{\partial v}+\frac{f_v(u,v)}{t} = 0,
-    }
-\end{equation}
-with $f_u,f_v$ exactly the boundary-traction friction of Eq.~\eqref{eq:friction_two_piece}, since $f_u\equiv\sigma_{ur}(t/2)-\sigma_{ur}(-t/2)$ by construction. Equation~\eqref{eq:inplane_hat} has precisely the form of the original membrane balance, Eq.~\eqref{eq:force_u}, with $\sigma_{ij}\to\hat\sigma_{ij}$ and the volumetric friction body force replaced by $f_u/t,f_v/t$: the geometry of the balance is unchanged, and only the physical origin of the driving term has been sharpened. As before, this is two equations for the three unknowns $\hat\sigma_{uu},\hat\sigma_{uv},\hat\sigma_{vv}$; we close the gap using compatibility.
-
-\subsection{Saint-Venant compatibility and the Beltrami--Michell equation}
-For a continuous sheet undergoing small deformation without tearing or overlap, the mid-surface strain components $\hat\epsilon_{uu},\hat\epsilon_{vv},\hat\epsilon_{uv}$ must be derivable from a single, continuous in-plane displacement field, which requires the Saint-Venant compatibility condition
-\begin{equation}\label{eq:compat_strain}
-    \frac{\partial^2\hat\epsilon_{uu}}{\partial v^2} + \frac{\partial^2\hat\epsilon_{vv}}{\partial u^2} - 2\frac{\partial^2\hat\epsilon_{uv}}{\partial u\,\partial v} = 0.
-\end{equation}
-Under linear isotropic plane-stress elasticity, Hooke's law relates these strains to the thickness-averaged stresses via Young's modulus $E$ and Poisson ratio $\nu$:
-\begin{equation}\label{eq:hookes_law}
-    \hat\epsilon_{uu}=\frac1E(\hat\sigma_{uu}-\nu\hat\sigma_{vv}), \qquad
-    \hat\epsilon_{vv}=\frac1E(\hat\sigma_{vv}-\nu\hat\sigma_{uu}), \qquad
-    \hat\epsilon_{uv}=\frac{1+\nu}{E}\hat\sigma_{uv}.
-\end{equation}
-Substituting Eq.~\eqref{eq:hookes_law} into Eq.~\eqref{eq:compat_strain} and multiplying through by $E$, the elastic modulus cancels out entirely:
-\begin{equation}\label{eq:compat_stress_raw}
-    \frac{\partial^2\hat\sigma_{uu}}{\partial v^2} - \nu\frac{\partial^2\hat\sigma_{vv}}{\partial v^2} + \frac{\partial^2\hat\sigma_{vv}}{\partial u^2} - \nu\frac{\partial^2\hat\sigma_{uu}}{\partial u^2} - 2(1+\nu)\frac{\partial^2\hat\sigma_{uv}}{\partial u\,\partial v} = 0.
-\end{equation}
-To eliminate the mixed shear derivative, we differentiate the first equation of Eq.~\eqref{eq:inplane_hat} with respect to $u$ and the second with respect to $v$, then add:
-\begin{equation}\label{eq:mixed_elim}
-    2\frac{\partial^2\hat\sigma_{uv}}{\partial u\,\partial v} = -\left(\frac{\partial^2\hat\sigma_{uu}}{\partial u^2}+\frac{\partial^2\hat\sigma_{vv}}{\partial v^2}\right) - \frac1t\left(\frac{\partial f_u}{\partial u}+\frac{\partial f_v}{\partial v}\right).
-\end{equation}
-Substituting Eq.~\eqref{eq:mixed_elim} into Eq.~\eqref{eq:compat_stress_raw}, the coefficients of $\partial^2\hat\sigma_{uu}/\partial u^2$ collect to $-\nu+(1+\nu)=1$ (matching the coefficient $1$ already present on $\partial^2\hat\sigma_{uu}/\partial v^2$), and likewise the coefficients of $\partial^2\hat\sigma_{vv}/\partial v^2$ collect to $1$; the $\hat\sigma_{uu},\hat\sigma_{vv}$ terms therefore combine into the plain 2D Laplacian $\nabla^2:=\partial^2/\partial u^2+\partial^2/\partial v^2$ acting on their sum, giving the Beltrami--Michell equation for plane stress in the presence of a boundary-traction body force:
-\begin{equation}\label{eq:beltrami_michell}
-    \boxed{
-    \nabla^2\big(\hat\sigma_{uu}+\hat\sigma_{vv}\big) + \frac{1+\nu}{t}\left(\frac{\partial f_u}{\partial u}+\frac{\partial f_v}{\partial v}\right) = 0,
-    }
-\end{equation}
-with $f_u,f_v$ given by Eq.~\eqref{eq:friction_two_piece}. This is the third equation needed to close Eq.~\eqref{eq:inplane_hat}: together they form three equations for the three unknowns $\hat\sigma_{uu},\hat\sigma_{uv},\hat\sigma_{vv}$, subject to the free-edge boundary conditions on the long, unloaded edges of the ribbon,
+\section{PDE formulation and closed-form solution}\label{sec:closed_form}
+We now assemble the pieces above into a closed system for the stress field. The three equilibrium equations, Eqs.~\eqref{eq:inplane_u_full}--\eqref{eq:outofplane_r_full}, are three PDEs for six unknown stress components at every point $(u,v,\zeta)$. Section~\ref{sec:friction} supplies what is needed to close this at the two surfaces $\zeta=\pm\frac{t}{2}$: there, $\sigma_{ur},\sigma_{vr}$ are fixed directly in terms of $\sigma_{rr}$ by Coulomb friction (Eqs.~\ref{eq:sigma_ur_inner}--\ref{eq:sigma_vr_outer}), and $\sigma_{rr}$'s own two boundary values are tied recursively, layer to layer, by Newton's third law (Eqs.~\ref{eq:contact_outer}--\ref{eq:contact_inner}). Combined with the linear-through-thickness approximation of Section~\ref{sec:equilibrium}, this reduces every unknown to a function of $(u,v)$ alone. We also carry forward the free-edge boundary conditions on the long, unloaded edges of the ribbon,
 \begin{equation}\label{eq:bc_free_edges}
     \boxed{\sigma_{uv}\left(u,v=\pm\frac{W}{2}\right) = 0, \qquad \sigma_{vv}\left(u,v=\pm\frac{W}{2}\right)=0,}
 \end{equation}
-which hold at every $\zeta$ and therefore, in particular, for $\hat\sigma_{uv},\hat\sigma_{vv}$. Unlike the earlier treatment of Section~\ref{sec:six_unknowns}, Eqs.~\eqref{eq:inplane_hat}--\eqref{eq:bc_free_edges} constitute a genuinely closed, well-posed boundary value problem for $\hat\sigma_{uu},\hat\sigma_{uv},\hat\sigma_{vv}$ on $(u,v)\in[0,L]\times[-W/2,W/2]$, at any frozen extension $x$.
+which hold at every $\zeta$ and so apply directly to the thickness-uniform $\sigma_{uv},\sigma_{vv}$ used below, and the end load applied at the active end, $F(x)=W\big[\sigma_{uu}(L)\sin\phi+\sigma_{uv}(L)\cos\phi\big]$ (the resultant of $\sigma_{uu},\sigma_{uv}$ projected onto the global pulling direction).
 
-\section{PDE formulation and closed-form solution}\label{sec:closed_form}
-We now seek to solve the system of PDEs for the stress field. To recap (Section~\ref{sec:count}): of the six stress components introduced in Section~\ref{sec:six_unknowns}, three ---$\sigma_{ur},\sigma_{vr},\sigma_{rr}$--- were eliminated along the way rather than solved for, via the uniform-through-thickness approximation together with Coulomb friction and Newton's Third Law (Eqs.~\ref{eq:sigma_ur_outer}--\ref{eq:sigma_ur_inner}, \ref{eq:Pcontact_bc}), leaving them expressed entirely in terms of the remaining three through the clamping pressure $P$ (Eq.~\ref{eq:p}),
-$$P = \sigma_{uu}\cos^2\phi+\sigma_{vv}\sin^2\phi-\sigma_{uv}\sin(2\phi).$$
-What survives is a genuinely closed system for $\hat\sigma_{uu},\hat\sigma_{uv},\hat\sigma_{vv}$ alone: the two thickness-averaged in-plane equilibrium equations (Eq.~\ref{eq:inplane_hat}),
-$$\frac{\partial\hat\sigma_{uu}}{\partial u}+\frac{\partial\hat\sigma_{uv}}{\partial v}+\frac{f_u}{t} = 0, \qquad \frac{\partial\hat\sigma_{uv}}{\partial u}+\frac{\partial\hat\sigma_{vv}}{\partial v}+\frac{f_v}{t} = 0,$$
-closed by the Beltrami--Michell compatibility equation (Eq.~\ref{eq:beltrami_michell}),
-$$\nabla^2\big(\hat\sigma_{uu}+\hat\sigma_{vv}\big) + \frac{1+\nu}{t}\left(\frac{\partial f_u}{\partial u}+\frac{\partial f_v}{\partial v}\right) = 0,$$
-subject to the free-edge boundary conditions (Eq.~\ref{eq:bc_free_edges}), $\sigma_{uv}=\sigma_{vv}=0$ at $v=\pm W/2$. The friction body force $f_u,f_v$ entering both is the two-piece law of Eq.~\eqref{eq:friction_two_piece}, built from $P$ above. These equations, together with Eqs.~\eqref{eq:sigma_ur_outer}--\eqref{eq:sigma_ur_inner} and \eqref{eq:Pcontact_bc} (already folded into $P$ and $f_u,f_v$, so not solved separately), are the only ones carried forward as genuinely independent relations from Sections~\ref{sec:equilibrium}--\ref{sec:compatibility}; everything else derived along the way (Eqs.~\ref{eq:inplane_u_full}, \ref{eq:outofplane_full}, and the pure-membrane limit Eq.~\ref{eq:force_u}) was superseded by its own reduced or thickness-averaged form and is kept only for reference.
+\subsection{Thickness integration}\label{sec:thickness_integration}
+Integrate Eq.~\eqref{eq:inplane_u_full} over $\zeta\in[-\frac{t}{2},\frac{t}{2}]$. Writing $\sigma_{ur}(u,v,\zeta)$ as linear in $\zeta$ with boundary values fixed by Eqs.~\eqref{eq:sigma_ur_inner},\eqref{eq:sigma_ur_outer}, its thickness average is
+$$\bar\sigma_{ur}:=\frac1t\int_{-\frac{t}{2}}^{\frac{t}{2}}\sigma_{ur}\,\mathrm d\zeta=\frac12\Big[\sigma_{ur}(\frac{t}{2})+\sigma_{ur}(-\frac{t}{2})\Big]$$
+(the linear part of the profile integrates to zero over the symmetric interval), while $\int\frac{\partial\sigma_{ur}}{\partial\zeta}\,\mathrm d\zeta=\sigma_{ur}(\frac{t}{2})-\sigma_{ur}(-\frac{t}{2})=:f_u(u,v)$ is the same boundary-flux difference used previously. Taking $\sigma_{uu},\sigma_{uv}$ uniform through the thickness (nothing at this order sources a $\zeta$-dependence in them) and dividing by $t$,
+\begin{equation}\label{eq:inplane_u_integrated}
+    \boxed{\frac{\partial\sigma_{uu}}{\partial u}+\frac{\partial\sigma_{uv}}{\partial v}+\frac{f_u}{t} + \kappa_{uu}\bar\sigma_{ur}-\kappa_{uv}\bar\sigma_{vr} = 0,}
+\end{equation}
+and, by the identical argument applied to Eq.~\eqref{eq:inplane_v_full},
+\begin{equation}\label{eq:inplane_v_integrated}
+    \boxed{\frac{\partial\sigma_{uv}}{\partial u}+\frac{\partial\sigma_{vv}}{\partial v}+\frac{f_v}{t} - \kappa_{uv}\bar\sigma_{ur}+\kappa_{vv}\bar\sigma_{vr} = 0.}
+\end{equation}
+Unlike a treatment that discards the curvature-weighted terms outright, Eqs.~\eqref{eq:inplane_u_integrated}--\eqref{eq:inplane_v_integrated} keep them, now expressed through the through-thickness \emph{average} $\bar\sigma_{ur},\bar\sigma_{vr}$ rather than the pointwise value. Using Eqs.~\eqref{eq:sigma_ur_inner}--\eqref{eq:sigma_vr_outer}, $\bar\sigma_{ur}=-\tfrac\mu2\sin(2\phi)\big[\sigma_{rr}(\frac{t}{2})+\sigma_{rr}(-\frac{t}{2})\big]$ and $\bar\sigma_{vr}=-\tfrac\mu2\cos(2\phi)\big[\sigma_{rr}(\frac{t}{2})+\sigma_{rr}(-\frac{t}{2})\big]$ (each term vanishing on whichever side has no neighbor), and a short calculation from Eq.~\eqref{eq:curvatures} shows $\kappa_{uu}\sin2\phi-\kappa_{uv}\cos2\phi=\kappa_{uv}$, so the curvature-weighted correction in Eq.~\eqref{eq:inplane_u_integrated} collapses to
+\begin{equation}\label{eq:curvature_correction}
+    \kappa_{uu}\bar\sigma_{ur}-\kappa_{uv}\bar\sigma_{vr} = -\frac{\mu\kappa_{uv}}{2}\Big[\sigma_{rr}(\frac{t}{2})+\sigma_{rr}(-\frac{t}{2})\Big],
+\end{equation}
+proportional to the \emph{sum}, rather than the difference, of the two boundary pressures --- and to $\kappa_{uv}$, not $\kappa_{uu}$. Because $\kappa_{uv}$ vanishes at $\phi=0,90^\circ$ and is exactly the off-diagonal curvature responsible for load transfer between $u$ and $v$ (Section~\ref{sec:local_curvature}), this term is a genuine, if secondary, correction to the friction-driven balance --- not something to be dropped outright --- and we carry it forward symbolically, returning to its relative size once $\sigma_{rr}$'s boundary values are pinned down below.
 
+We now integrate the out-of-plane equation, Eq.~\eqref{eq:outofplane_r_full}, the same way. Its $\zeta$-derivative term integrates directly to the \emph{jump} in $\sigma_{rr}$ across the thickness, $\Delta\sigma_{rr}:=\sigma_{rr}(\frac{t}{2})-\sigma_{rr}(-\frac{t}{2})$, while $\sigma_{uu},\sigma_{uv},\sigma_{vv}$ (uniform through the thickness) simply pick up a factor of $t$:
+\begin{equation}\label{eq:outofplane_integrated}
+    \boxed{\Delta\sigma_{rr} = t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big] - t\left[\frac{\partial\bar\sigma_{ur}}{\partial u}+\frac{\partial\bar\sigma_{vr}}{\partial v}\right],}
+\end{equation}
+where the second bracket involves an extra in-plane derivative of an already boundary-traction-sized quantity and is subdominant to the first; we drop it below and return to it only if the leading balance proves insufficient. Equation~\eqref{eq:outofplane_integrated} is the relation this section has been building toward: it says the two contact pressures felt on a ribbon element's two faces cannot be equal in general, but must differ by an amount set directly by the local in-plane tension, weighted by curvature and by the actual physical thickness $t$ --- exactly the capstan-type mechanism (normal pressure $\sim$ tension over radius, for a tensioned band pressed against a curved surface) that generates contact pressure from tension in the first place. Writing out $\Delta\sigma_{rr}=\sigma_{rr}(\frac{t}{2})-\sigma_{rr}(-\frac{t}{2})$ explicitly, Eq.~\eqref{eq:outofplane_integrated} becomes
+\begin{equation}\label{eq:pressure_jump}
+    \boxed{\sigma_{rr}(u,v,\frac{t}{2}) - \sigma_{rr}(u,v,-\frac{t}{2}) \approx t\Big[\kappa_{uu}\sigma_{uu}(u,v)-2\kappa_{uv}\sigma_{uv}(u,v)+\kappa_{vv}\sigma_{vv}(u,v)\Big].}
+\end{equation}
 
-\subsection{Smooth relaxation of the two overlap boundaries}\label{sec:smooth_relax}
-The friction law of Eq.~\eqref{eq:friction_two_piece} is linear in the stress field (through $P_{in},P_{out}$), with coefficients that switch off discontinuously at the two geometric overlap boundaries $v_c^{in}(x)$ and $v_c^{out}(x)$. As before, we relax each hard indicator into a smooth sigmoidal gate. Let $\sigma(z)=1/(1+e^{-z})$ denote the logistic sigmoid, and define
-\begin{equation}\label{eq:mask_width}
-    S_w^{in}(v;x) = \sigma\!\left(\frac{v_c^{in}(x)-v}{\ell_w}\right), \qquad
-    S_w^{out}(v;x) = \sigma\!\left(\frac{v-v_c^{out}(x)}{\ell_w}\right),
+\subsection{Closing the system: why $\sigma_{rr}$ does not simply propagate to zero}\label{sec:pressure_recursion}
+Read on its own, the matching condition of Section~\ref{sec:layer_layer_contact} (Eqs.~\ref{eq:contact_outer}--\ref{eq:contact_inner}) contains no mechanism for generating a nonzero contact pressure anywhere: starting from the base case $\sigma_{rr}(L,v,\frac{t}{2})=0$, it would simply propagate that zero value backward through every layer, forcing $\sigma_{rr}(u,v,\pm \frac{t}{2})\equiv0$ everywhere, and hence, through Eqs.~\eqref{eq:sigma_ur_inner}--\eqref{eq:sigma_vr_outer}, $\sigma_{ur}\equiv\sigma_{vr}\equiv0$ as well. It is Eq.~\eqref{eq:pressure_jump} that resolves this: the matching condition and the pressure-jump relation hold \emph{simultaneously}, not one after the other. Evaluating Eq.~\eqref{eq:pressure_jump} at $(u^+,v^+)$ and substituting $\sigma_{rr}(u^+,v^+,-\frac{t}{2})=\sigma_{rr}(u,v,\frac{t}{2})$ (Eq.~\ref{eq:contact_outer}) gives
+\begin{equation}\label{eq:pressure_recursion_full}
+    \boxed{\begin{aligned}
+    \sigma_{rr}(u,v,\tfrac{t}{2}) &= \sigma_{rr}(u^+,v^+,\tfrac{t}{2}) - t\Big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\Big](u^+,v^+), \\
+    &\text{valid for } v\ge -\tfrac{W}{2}+2\pi r\sin\phi,
+    \end{aligned}}
 \end{equation}
-where $\ell_w\ll W$ is a regularization length scale; $S_w^{in}\to1$ deep in the region with an inner neighbor and $\to0$ past $v_c^{in}$, while $S_w^{out}\to1$ deep in the region with an outer neighbor and $\to0$ past $v_c^{out}$, recovering the hard indicators of Eq.~\eqref{eq:friction_two_piece} as $\ell_w\to0$. Using the leading-order approximation $P_{in}\approx P_{out}\approx P(u,v)$ (Eq.~\ref{eq:p}, evaluated pointwise; exact in the ``both present'' band up to the $O(t/r)$ correction already noted, and the natural leading-order closure for each single-neighbor band), the smoothed friction body forces become
-\begin{align}
-    f_u^s(u,v,x) &= \frac{\mu}{r}\sin(2\phi)\,P(u,v)\Big[S_w^{out}(v;x)-S_w^{in}(v;x)\Big], \label{eq:f_smoothed_general}\\
-    f_v^s(u,v,x) &= \frac{\mu}{r}\cos(2\phi)\,P(u,v)\Big[S_w^{out}(v;x)-S_w^{in}(v;x)\Big]. \notag
-\end{align}
+with $\sigma_{rr}(L,v,\frac{t}{2})=0$ starting the recursion. Unlike the matching condition alone, Eq.~\eqref{eq:pressure_recursion_full} carries a genuine source term at every step, $-t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big]$, nonzero whenever the local in-plane tension is nonzero. Unwound from the base case, $\sigma_{rr}(u,v,\frac{t}{2})$ is a sum of such terms evaluated at every wound layer further out than $(u,v)$ --- so $\sigma_{rr}$ accumulates precisely because, and only because, $\sigma_{uu}$ (and $\sigma_{uv},\sigma_{vv}$) are nonzero, exactly as anticipated. And $\sigma_{uu}$ is nonzero in turn because the Instron pull at the active end prescribes a nonzero resultant force $F(x)$ there (Section~\ref{sec:closed_form}, opening): it is that end condition, not anything internal to Eqs.~\eqref{eq:inplane_u_integrated}--\eqref{eq:pressure_jump}, that ultimately keeps every stress component in the system from relaxing to zero. (One can check directly that Eq.~\eqref{eq:contact_inner} combined with Eq.~\eqref{eq:pressure_jump} at $(u,v)$ reproduces exactly Eq.~\eqref{eq:pressure_recursion_full} shifted by one layer, so the two contact relations of Section~\ref{sec:layer_layer_contact} are consistent with a single underlying recursion, not two independent ones.)
 
-The outer-only term $S_w^{out}$ is the genuinely new piece relative to the earlier, single-sided treatment, and it is exactly the term whose driving pressure $P_{out}$ we flagged in Section~\ref{sec:friction_revisited} as set by a contact one full turn away rather than by the local stress state. Resolving it in full requires tracking a recursive chain of contact pressures across the whole stack of wound layers---genuinely new physics beyond a single, local closure, and a natural next step once the present, simpler system is confirmed correct. For a first, leading-order treatment, we extend to the outer-only band the same reasoning already used to argue (Section~\ref{sec:friction}, in the original membrane treatment) that the ribbon's bending stiffness carries load sideways across regions with no direct local support: an isolated outer-only contact, resting only on material that is itself only barely supported further out, transmits a contact pressure that is subdominant at leading order, exactly like the true overhang region of the original single-sided model. We therefore set $S_w^{out}\to0$ at leading order, leaving
-\begin{equation}\label{eq:f_smoothed}
-    f_u^s(u,v,x) \approx -S_w^{in}(v;x)\,\frac{\mu}{r}\sin(2\phi)\,P(u,v), \qquad
-    f_v^s(u,v,x) \approx -S_w^{in}(v;x)\,\frac{\mu}{r}\cos(2\phi)\,P(u,v),
-\end{equation}
-which are smooth (infinitely differentiable) functions of $v$ for any $\ell_w>0$ and, since $P$ is linear in $\hat\sigma_{uu},\hat\sigma_{uv},\hat\sigma_{vv}$, linear in the stress field at every point. We revisit the dropped $S_w^{out}$ term, and what refining it would change, at the end of this section.
+This also gives the complementary limit directly. If the helix is wound loosely enough that no $v$ satisfies either overlap condition at the current $x$ (Eq.~\ref{eq:overlap_in}--\ref{eq:overlap_out}), then $\sigma_{rr}(u,v,\pm \frac{t}{2})\equiv0$ is forced pointwise \emph{by definition} rather than by Eq.~\eqref{eq:pressure_recursion_full}, and Eq.~\eqref{eq:pressure_jump} then \emph{requires} $\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\equiv0$ as a consistency condition. Together with $f_u=f_v=0$ in Eqs.~\eqref{eq:inplane_u_integrated}--\eqref{eq:inplane_v_integrated} and the free-edge conditions of Eq.~\eqref{eq:bc_free_edges}, this drives $\sigma_{uu},\sigma_{uv},\sigma_{vv}\equiv0$ as well: with no self-contact anywhere there is no mechanism to resist the pull, so the ribbon offers no static tension and simply slides freely. This matches the physical expectation exactly.
 
-\subsection{Width-averaged 1D reduction}\label{sec:width_avg}
-We first use compatibility itself to justify, rather than assume, that the width-averaged $\bar\sigma_{vv}$ is negligible relative to $\bar\sigma_{uu}$. The free-edge condition of Eq.~\eqref{eq:bc_free_edges} pins $\hat\sigma_{vv}=0$ at $v=\pm W/2$, so $\hat\sigma_{vv}$ can only be nonzero in the interior of the width by varying over the \emph{short} length scale $W$; consequently $\partial^2\hat\sigma_{vv}/\partial v^2 \sim \hat\sigma_{vv}/W^2$ in Eq.~\eqref{eq:beltrami_michell}, whereas $\hat\sigma_{uu}$ (uniform across the width, by the closure below, and varying only over the \emph{long} scale $L$ set by the friction-driven exponential buildup) contributes $\partial^2\hat\sigma_{uu}/\partial u^2\sim\hat\sigma_{uu}/L^2$, at most as large as the friction-source terms on the right of Eq.~\eqref{eq:beltrami_michell}, themselves $O(\hat\sigma_{uu}/r)$. Balancing $\hat\sigma_{vv}/W^2$ against terms of order $\hat\sigma_{uu}/L^2$ or $\hat\sigma_{uu}/(rL)$ gives $\hat\sigma_{vv}\sim\hat\sigma_{uu}\,(W/L)^2$ or smaller, which vanishes in the narrow-ribbon limit $L\gg W$ already invoked throughout. (We do not width-average Eq.~\eqref{eq:beltrami_michell} directly, since its second-order derivatives do not reduce to a clean boundary-flux argument the way the first-order equilibrium equations below do; this is an order-of-magnitude estimate, in the same spirit as the $t/r$ scaling arguments of Section~\ref{sec:equilibrium}.) We therefore take, exactly as before but now justified,
-\begin{equation}\label{eq:svv_zero}
-    \bar\sigma_{vv}(u) \approx 0, \qquad \bar\sigma_{uu}(u):=\frac1W\int_{-W/2}^{W/2}\hat\sigma_{uu}\,\mathrm dv, \quad\text{and similarly for }\bar\sigma_{uv},
+\subsection{The accumulated contact pressure in closed form}\label{sec:accumulated_pressure}
+Equation~\eqref{eq:pressure_recursion_full} steps $(u,v)\to(u^+,v^+)=(u+2\pi r\cos\phi,\,v-2\pi r\sin\phi)$ at each iteration --- a fixed shift, since $r,\phi$ are frozen at any given extension $x$. Because the source term on the right of Eq.~\eqref{eq:pressure_recursion_full} carries an explicit factor of $t$, the change in $\sigma_{rr}(\cdot,\frac{t}{2})$ from one wound layer to the next is small (order $\frac{t}{r}$ relative to $\sigma_{uu}$ itself), even though the geometric step $2\pi r\cos\phi$ between layers is not. This is exactly the situation in which a discrete recursion is well approximated by its continuum limit: treating $\sigma_{rr}(u,v,\frac{t}{2})$ as a smooth function and expanding Eq.~\eqref{eq:pressure_recursion_full} to first order in the step gives the transport equation
+\begin{equation}\label{eq:pressure_transport}
+    2\pi r\cos\phi\,\frac{\partial\sigma_{rr}(u,v,\frac{t}{2})}{\partial u} - 2\pi r\sin\phi\,\frac{\partial\sigma_{rr}(u,v,\frac{t}{2})}{\partial v} = t\Big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\Big].
 \end{equation}
-and the corresponding uniform closure $\hat\sigma_{uu}(u,v)\approx\bar\sigma_{uu}(u)$, $\hat\sigma_{uv}(u,v)\approx\bar\sigma_{uv}(u)$.
+The left side is exactly $2\pi r\cos\phi$ times the derivative of $\sigma_{rr}(\cdot,\frac{t}{2})$ along the direction $(\cos\phi,-\sin\phi)$ --- precisely the direction of the neighbor shift $(u^+,v^+)$ itself, per Eq.~\eqref{eq:uplus}--\eqref{eq:vplus}. If, as adopted below (Section~\ref{sec:width_reduction}), $\sigma_{uu},\sigma_{uv},\sigma_{vv}$ are taken independent of $v$, the right side of Eq.~\eqref{eq:pressure_transport} depends only on $u$, and integrating Eq.~\eqref{eq:pressure_transport} along its characteristic line from $(u,v)$ out to the base case at $u'=L$ gives the closed form
+\begin{equation}\label{eq:pressure_closed}
+    \boxed{\sigma_{rr}(u,v,\frac{t}{2}) = -\frac{t}{2\pi r\cos\phi}\int_u^L \Big[\kappa_{uu}\sigma_{uu}(u')-2\kappa_{uv}\sigma_{uv}(u')+\kappa_{vv}\sigma_{vv}(u')\Big]\,\mathrm du',}
+\end{equation}
+with $\sigma_{rr}(u,v,-\frac{t}{2})$ recovered directly from Eq.~\eqref{eq:pressure_jump}. Notably, Eq.~\eqref{eq:pressure_closed} is then independent of $v$ as well, consistent with the $v$-independence assumed for $\sigma_{uu},\sigma_{uv},\sigma_{vv}$ on the right. This closed form implicitly assumes the characteristic through $(u,v)$ reaches $u'=L$ before its $v$-coordinate drifts outside $\left[-\frac{W}{2},\frac{W}{2}\right]$ and exits through the side of the ribbon rather than its end; resolving that width-edge truncation exactly would replace the upper limit $L$ with $\min\!\left(L,\ u+\big(v+\frac{W}{2}\big)\frac{\cos\phi}{\sin\phi}\right)$, a secondary correction we do not carry through below.
 
-Integrating the first equation of Eq.~\eqref{eq:inplane_hat}, with $f_u\to f_u^s$ of Eq.~\eqref{eq:f_smoothed}, across the width exactly as before: the $\partial\hat\sigma_{uu}/\partial u$ term gives $W\,\mathrm d\bar\sigma_{uu}/\mathrm du$; the $\partial\hat\sigma_{uv}/\partial v$ term integrates, via the free-edge condition, to $\sigma_{uv}(u,W/2)-\sigma_{uv}(u,-W/2)=0$; and dividing by $W$ gives
-\begin{equation}\label{eq:width_avg_u}
-    \frac{\mathrm d\bar\sigma_{uu}}{\mathrm du} + \frac{1}{W}\int_{-W/2}^{W/2} f_u^s(u,v,x)\,\mathrm dv = 0,
+\subsection{Narrow-ribbon reduction and the closed ODE}\label{sec:width_reduction}
+As in a beam or narrow-plate approximation, and consistent with $L\gg W$ already assumed throughout, we take $\sigma_{vv}(u,v)\approx0$ and $\sigma_{uu},\sigma_{uv}$ approximately independent of $v$ (uniform across the width) for the remainder of this section; unlike the compatibility-based argument used in an earlier pass on this document, this is now adopted directly as a modeling approximation for a long, narrow ribbon, not derived. Integrating Eq.~\eqref{eq:inplane_u_integrated} over $v\in\left[-\frac{W}{2},\frac{W}{2}\right]$: the $\frac{\partial\sigma_{uu}}{\partial u}$ term gives $W\,\frac{\mathrm d\sigma_{uu}}{\mathrm du}$ (an ordinary derivative, since $\sigma_{uu}$ is now a function of $u$ alone); the $\frac{\partial\sigma_{uv}}{\partial v}$ term integrates, via the free-edge condition of Eq.~\eqref{eq:bc_free_edges}, to $\sigma_{uv}\left(u,\frac{W}{2}\right)-\sigma_{uv}\left(u,-\frac{W}{2}\right)=0$; and the $\frac{f_u}{t}$ term integrates using Eq.~\eqref{eq:sigma_ur_inner},\eqref{eq:sigma_ur_outer} and the fact that $\sigma_{rr}\left(u,\cdot,\pm\frac{t}{2}\right)$ is itself $v$-independent (Eq.~\ref{eq:pressure_closed}), so only the presence/absence gates of Eq.~\eqref{eq:overlap_in}--\eqref{eq:overlap_out} depend on $v$, each contributing a factor equal to the length of its band, $W-2\pi r\sin\phi$:
+\begin{equation}\label{eq:fu_width_integrated}
+    \begin{aligned}
+    \frac{1}{tW}\int_{-\frac{W}{2}}^{\frac{W}{2}} f_u\,\mathrm dv &= -\frac{\mu\sin(2\phi)\,(W-2\pi r\sin\phi)}{tW}\left[\sigma_{rr}\left(u,\frac{t}{2}\right)-\sigma_{rr}\left(u,-\frac{t}{2}\right)\right] \\
+    &= -\frac{\mu(W-2\pi r\sin\phi)}{W}\sin(2\phi)\Big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}\Big],
+    \end{aligned}
 \end{equation}
-with the identical steps applied to the second equation of Eq.~\eqref{eq:inplane_hat} giving the corresponding equation for $\bar\sigma_{uv}$. Using Eq.~\eqref{eq:svv_zero}, the clamping pressure of Eq.~\eqref{eq:p} becomes, under the uniform closure,
-\begin{equation}\label{eq:Pbar}
-    P(u,v) \approx \bar P(u) := \cos^2\phi\,\bar\sigma_{uu}(u)-\sin(2\phi)\,\bar\sigma_{uv}(u),
+using Eq.~\eqref{eq:pressure_jump} (with $\sigma_{vv}\approx0$) for the bracketed jump. The curvature-correction term of Eq.~\eqref{eq:curvature_correction} instead needs the \emph{sum} $\sigma_{rr}\left(u,\frac{t}{2}\right)+\sigma_{rr}\left(u,-\frac{t}{2}\right)$, not the difference --- and by Eq.~\eqref{eq:pressure_closed} that sum is set by the pressure \emph{accumulated over every layer out to $u=L$}, not by the local tension at $u$ alone. Whether this nonlocal term is actually small compared to Eq.~\eqref{eq:fu_width_integrated} therefore depends on how many layers are wound outside $u$ (it is not guaranteed small just because $t\ll r$); we drop it here to obtain a closed, local system, flagging it --- honestly, not by assumption --- as an open refinement, exactly as with the term already dropped in Eq.~\eqref{eq:outofplane_integrated}. Applying the identical steps to Eq.~\eqref{eq:inplane_v_integrated} gives the pair
+\begin{equation}\label{eq:ode_final}
+    \boxed{\begin{aligned}
+    \frac{\mathrm d\sigma_{uu}}{\mathrm du} &= \frac{\mu(W-2\pi r\sin\phi)}{W}\sin(2\phi)\Big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}\Big], \\
+    \frac{\mathrm d\sigma_{uv}}{\mathrm du} &= \frac{\mu(W-2\pi r\sin\phi)}{W}\cos(2\phi)\Big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}\Big].
+    \end{aligned}}
 \end{equation}
-independent of $v$, so it factors outside the remaining width integral in Eq.~\eqref{eq:f_smoothed}, leaving only the gate $S_w^{in}(v;x)$ of Eq.~\eqref{eq:mask_width} to be integrated:
-\begin{equation}\label{eq:eta_def}
-    \int_{-W/2}^{W/2} f_u^s(u,v,x)\,\mathrm dv \approx -\frac{\mu}{r}\sin(2\phi)\,\bar P(u)\left[\int_{-W/2}^{W/2}S_w^{in}(v;x)\,\mathrm dv\right].
-\end{equation}
-Using the antiderivative $\int\sigma(z)\,\mathrm dz=\mathrm{softplus}(z):=\ln(1+e^z)$ of the logistic sigmoid, and $v_c^{in}(x)=\frac{W}{2}-\Delta v$ with $\Delta v(x):=2\pi r\sin\phi$, the width-averaged, dimensionless \emph{overlap fraction} is
-\begin{equation}\label{eq:eta_smooth}
-    \boxed{
-    \eta_s(x) := \frac{1}{W}\int_{-W/2}^{W/2} S_w^{in}(v;x)\,\mathrm dv
-    = \frac{\ell_w}{W}\Big[\mathrm{softplus}\big(\tfrac{W-\Delta v}{\ell_w}\big) - \mathrm{softplus}\big(\tfrac{-\Delta v}{\ell_w}\big)\Big],
-    }
-\end{equation}
-which, as $\ell_w\to0$ (for $0<\Delta v<W$), tends to $\eta(x)=1-\Delta v/W$, the geometrically supported fraction of the width. Substituting Eq.~\eqref{eq:eta_smooth} into Eq.~\eqref{eq:eta_def}, dividing by $W$, and writing out $\bar P(u)$ from Eq.~\eqref{eq:Pbar} explicitly, the width-averaged equilibrium equations become the linear ODE system
-\begin{equation}\label{eq:ode_nonlinear}
-    \boxed{
-    \frac{\mathrm d\bar\sigma_{uu}}{\mathrm du} = \eta_s(x)\big[A_u\bar\sigma_{uu}+B_u\bar\sigma_{uv}\big], \qquad
-    \frac{\mathrm d\bar\sigma_{uv}}{\mathrm du} = \eta_s(x)\big[A_v\bar\sigma_{uu}+B_v\bar\sigma_{uv}\big],
-    }
-\end{equation}
-\begin{equation}\label{eq:coeff_correct}
-    A_u = \frac{\mu}{r}\cos^2\phi\sin(2\phi), \quad B_u=-\frac{\mu}{r}\sin^2(2\phi), \quad
-    A_v = \frac{\mu}{r}\cos^2\phi\cos(2\phi), \quad B_v = -\frac{\mu}{2r}\sin(4\phi).
-\end{equation}
-This is exactly Eq.~(4)--(5) of the earlier, single-sided closure, but now arrived at as the leading-order limit of the compatibility-closed system of Section~\ref{sec:compatibility}, with $\bar\sigma_{vv}\approx0$ justified rather than assumed.
+(For $2\pi r\sin\phi>W$ --- full overlap, no bare band at all --- the coefficient $W-2\pi r\sin\phi$ should be read as $0$, not negative; we work in the regime $2\pi r\sin\phi<W$ below.)
 
-\subsection{Exact rank-one structure and reduction to a scalar equation}\label{sec:rank1}
-The $2\times2$ coefficient matrix in Eq.~\eqref{eq:ode_nonlinear}, $M(x)=\left(\begin{smallmatrix}A_u&B_u\\A_v&B_v\end{smallmatrix}\right)$, is singular for every $x$: both rows are fixed multiples of $(\cos^2\phi,-\sin2\phi)$, since $f_u^s$ and $f_v^s$ are always the \emph{same} scalar $P$ times $\sin2\phi$ and $\cos2\phi$ respectively (Eq.~\ref{eq:f_smoothed}). Equivalently, $M$ is the rank-one outer product
-\begin{equation}\label{eq:M_rank1}
-    M(x) = \frac{\mu}{r}\,\vec u\,\vec w^{\mathsf T}, \qquad
-    \vec u = \begin{pmatrix}\sin2\phi\\ \cos2\phi\end{pmatrix}, \qquad
-    \vec w = \begin{pmatrix}\cos^2\phi\\ -\sin2\phi\end{pmatrix}, \qquad
-    \bar P(u) = \vec w \cdot \begin{pmatrix}\bar\sigma_{uu}(u)\\ \bar\sigma_{uv}(u)\end{pmatrix},
-\end{equation}
-with eigenvalues $\{0,\ \kappa(x)\}$, where $\vec u$ is the eigenvector for
-\begin{equation}\label{eq:kappa}
-    \kappa(x) := \frac{\mu}{r}\,(\vec w\cdot\vec u) = \frac{\mu}{r}\big(\cos^2\phi\sin2\phi - \sin2\phi\cos2\phi\big) = \frac{\mu}{r}\sin^2\phi\sin(2\phi),
-\end{equation}
-and the null eigenvector, satisfying $\vec w\cdot\vec v_0=0$ and therefore carrying zero contact pressure, is
-\begin{equation}\label{eq:vnull}
-    \vec v_0 = \begin{pmatrix}2\sin\phi\\ \cos\phi\end{pmatrix}.
-\end{equation}
-Writing the general solution as $\left(\begin{smallmatrix}\bar\sigma_{uu}(u)\\\bar\sigma_{uv}(u)\end{smallmatrix}\right) = A(u)\,\vec u + B_0\,\vec v_0$ and substituting into Eq.~\eqref{eq:ode_nonlinear} using $M\vec u=\kappa\vec u$, $M\vec v_0=0$, and the linear independence of $\vec u,\vec v_0$ for $\phi\ne0,90^\circ$, gives $B_0$ as a genuine constant of the motion together with a single autonomous scalar equation for $A(u)$:
+\subsection{Rank-one structure and closed-form solution}\label{sec:rank1}
+The right side of both equations in Eq.~\eqref{eq:ode_final} is the same scalar, $\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}$, multiplying $\sin(2\phi)$ in the first equation and $\cos(2\phi)$ in the second --- so the $2\times2$ coefficient matrix is rank one, with $(\sin2\phi,\cos2\phi)$ its only nonzero-eigenvalue eigenvector. Writing $\sigma_{uu}(u)=A(u)\sin(2\phi)$, $\sigma_{uv}(u)=A(u)\cos(2\phi)$ (the general solution also admits a null-space term along $(2\sin\phi,\cos\phi)$, which we set to zero, as before, for the minimal, best-conditioned solution carrying a single free constant), the bracket becomes
+$$\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv} = A(u)\big[\kappa_{uu}\sin2\phi-2\kappa_{uv}\cos2\phi\big] = A(u)\,\frac{2\sin^3\phi\cos\phi}{r}$$
+(using $\kappa_{uu}=\frac{\cos^2\phi}{r},\ \kappa_{uv}=\frac{\sin\phi\cos\phi}{r}$ from Eq.~\ref{eq:curvatures} and standard double-angle identities), and both equations of Eq.~\eqref{eq:ode_final} collapse to the single scalar equation
 \begin{equation}\label{eq:scalar_ode}
-    \boxed{
-    \frac{\mathrm dA}{\mathrm du} = \eta_s(x)\,\kappa(x)\,A(u), \qquad P(u) = A(u)\sin(2\phi)\sin^2\phi.
-    }
+    \boxed{\frac{\mathrm dA}{\mathrm du} = \frac{2\mu(W-2\pi r\sin\phi)\sin^3\phi\cos\phi}{rW}\,A(u).}
 \end{equation}
-As before, we take the minimal, best-conditioned choice $B_0=0$, with the single constant $A_0:=A(0)$ carrying the free physical scale of the whole solution (the ``holding tension'' at the base, exactly as in the classical capstan problem).
-
-\subsection{Closed-form solution}
-With $B_0=0$ and $\eta_s(x)\kappa(x)$ constant in $u$ (both depend only on the frozen extension $x$), Eq.~\eqref{eq:scalar_ode} integrates immediately:
+Since $r,\phi$ are frozen at fixed $x$, the coefficient on the right is a constant in $u$, and Eq.~\eqref{eq:scalar_ode} integrates immediately to
 \begin{equation}\label{eq:A_closed}
-    \boxed{
-    A(u) = A_0\exp\big[\eta_s(x)\,\kappa(x)\,u\big],
-    }
+    \boxed{A(u) = A_0\exp\left[\frac{2\mu(W-2\pi r\sin\phi)\sin^3\phi\cos\phi}{rW}\,u\right],}
 \end{equation}
+with $A_0:=A(0)$ the single free constant carrying the physical scale of the whole solution (the holding tension at the fixed, base end), so that
 \begin{equation}\label{eq:sigma_closed}
-    \boxed{
-    \bar\sigma_{uu}(u) = A_0\,e^{\eta_s(x)\kappa(x)u}\sin2\phi, \qquad
-    \bar\sigma_{uv}(u) = A_0\,e^{\eta_s(x)\kappa(x)u}\cos2\phi.
-    }
+    \boxed{\begin{aligned}
+    \sigma_{uu}(u) &= A_0\sin(2\phi)\exp\left[\frac{2\mu(W-2\pi r\sin\phi)\sin^3\phi\cos\phi}{rW}\,u\right], \\
+    \sigma_{uv}(u) &= A_0\cos(2\phi)\exp\left[\frac{2\mu(W-2\pi r\sin\phi)\sin^3\phi\cos\phi}{rW}\,u\right].
+    \end{aligned}}
 \end{equation}
-Choosing $A_0>0$ gives, since $\eta_s,\kappa\ge0$ everywhere,
-\begin{equation}\label{eq:P_nonneg_proof}
-    A_0>0 \quad\Longrightarrow\quad A(u)\ge A_0>0 \ \text{ for all } u\in[0,L],
-\end{equation}
-so $P(u)=A(u)\sin2\phi\sin^2\phi\ge A_0\sin2\phi\sin^2\phi>0$ throughout the ribbon, confirming the non-negativity of $P$ (and hence, via $P_{in}\approx P$, of $P_{in}$) assumed in Section~\ref{sec:friction_revisited}.
 
-\subsection{Force-displacement relation}
-Projecting the stress resultant at the active end ($u=L$) onto the global pulling direction, exactly as before, gives $F(x)=W\big[\bar\sigma_{uu}(L)\sin\phi(x)+\bar\sigma_{uv}(L)\cos\phi(x)\big]$; substituting Eq.~\eqref{eq:sigma_closed} and using $\sin2\phi\sin\phi+\cos2\phi\cos\phi=\cos(2\phi-\phi)=\cos\phi$ collapses the double-angle dependence, giving $F(x)=WA_0\cos\phi(x)\,e^{\eta_s(x)\kappa(x)L}$. Writing $\kappa(x)$ out in terms of $x$ (via $\sin\phi=x/L$, $\cos\phi=\sqrt{L^2-x^2}/L$, $\mu/r=\mu\theta_L/\sqrt{L^2-x^2}$) gives $\kappa(x)=2\mu\theta_L x^3/L^4$, and the final closed-form force-displacement law,
+\subsection{Sign and monotonicity of the contact pressure}\label{sec:sign_monotonicity}
+Section~\ref{sec:slip_direction} assumed $\sigma_{rr}\le0$ (compression) throughout, in order to write the Coulomb friction magnitude as $\mu$ times $-\sigma_{rr}$; we now verify this self-consistently. Take $A_0>0$ (a positive base tension). Since $\phi\in(0^\circ,90^\circ)$, $\sin\phi,\cos\phi>0$, so every prefactor appearing above is non-negative, and $\sigma_{uu}(u)=A_0\sin(2\phi)e^{(\cdots)u}\ge0$ for all $u\in[0,L]$: the axial stress is tensile everywhere, as it must be for a ribbon that is only ever pulled, never pushed. Substituting Eq.~\eqref{eq:sigma_closed} into the bracket of Eq.~\eqref{eq:pressure_closed},
+\begin{equation}
+    \begin{aligned}
+    \kappa_{uu}\sigma_{uu}(u')-2\kappa_{uv}\sigma_{uv}(u') &= A_0\,\frac{2\sin^3\phi\cos\phi}{r}\exp\left[\frac{2\mu(W-2\pi r\sin\phi)\sin^3\phi\cos\phi}{rW}\,u'\right] \\
+    &\ge 0 \quad\text{for all }u'\in[0,L],
+    \end{aligned}
+\end{equation}
+so the integrand in Eq.~\eqref{eq:pressure_closed} is non-negative throughout, its integral over $u'\in[u,L]$ is non-negative, and the leading minus sign in Eq.~\eqref{eq:pressure_closed} gives
+\begin{equation}\label{eq:sigma_rr_nonpositive}
+    \sigma_{rr}\left(u,v,\frac{t}{2}\right) \le 0 \quad\text{for all }(u,v),
+\end{equation}
+confirming the compression assumed throughout Section~\ref{sec:friction}. The same holds for $\sigma_{rr}\big(u,v,-\frac{t}{2}\big)$, since
+\begin{equation}
+    \sigma_{rr}\left(u,v,-\frac{t}{2}\right)=\sigma_{rr}\left(u,v,\frac{t}{2}\right)-t\Big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}\Big](u)
+\end{equation}
+(Eq.~\ref{eq:pressure_jump}) subtracts a term that is itself non-negative. Beyond the sign, Eq.~\eqref{eq:pressure_closed} is manifestly \emph{monotonic}: as $u$ decreases from $L$ (where it is exactly zero, by the base case) toward $0$, the integration range $[u,L]$ only grows, so $\left|\sigma_{rr}\left(u,v,\frac{t}{2}\right)\right|$ increases monotonically. This matches the physical picture directly: a layer near the base end ($u=0$) has every other wound layer stacked outside it and so carries the full accumulated contact pressure, while a layer at the active end ($u=L$) has nothing wound outside it and carries none.
+
+\subsection{Force-displacement relation}\label{sec:force_displacement}
+The resultant force at the active end, projected onto the global pulling direction, is $F(x)=W\big[\sigma_{uu}(L)\sin\phi+\sigma_{uv}(L)\cos\phi\big]$ (Section~\ref{sec:closed_form}, opening). Substituting Eq.~\eqref{eq:sigma_closed} at $u=L$ and using $\sin(2\phi)\sin\phi+\cos(2\phi)\cos\phi=\cos(2\phi-\phi)=\cos\phi$ to collapse the double-angle dependence,
+\begin{equation}
+    F(x) = WA_0\cos\phi\,\exp\left[\frac{2\mu(W-2\pi r\sin\phi)\sin^3\phi\cos\phi}{rW}\,L\right].
+\end{equation}
+Writing this out in terms of $x$ via $\sin\phi=\frac{x}{L}$, $\cos\phi=\frac{\sqrt{L^2-x^2}}{L}$, $r=\frac{\sqrt{L^2-x^2}}{\theta_L}$ (Eq.~\ref{eq:phi}--\ref{eq:r}), the exponent simplifies (the two factors of $\sqrt{L^2-x^2}$, one from $\cos\phi$ and one from $\frac{1}{r}$, cancel) to
+\begin{equation}
+    \frac{2\mu(W-2\pi r\sin\phi)\sin^3\phi\cos\phi}{rW}\,L = \mu\left(1-\frac{2\pi x\sqrt{L^2-x^2}}{\theta_L LW}\right)\frac{2\theta_L x^3}{L^3},
+\end{equation}
+giving the closed-form force--displacement law
 \begin{equation}\label{eq:F_closed}
-    \boxed{
-    F(x) = \frac{W}{L}\,A_0\,\sqrt{L^2-x^2}\;\exp\!\left[\frac{2\mu\theta_L\,\eta_s(x)\,x^3}{L^3}\right],
-    }
+    \boxed{F(x) = \frac{W A_0\sqrt{L^2-x^2}}{L}\,\exp\left[\mu\left(1-\frac{2\pi x\sqrt{L^2-x^2}}{\theta_L LW}\right)\frac{2\theta_L x^3}{L^3}\right],}
 \end{equation}
-with $r(x),\Delta v(x),\eta_s(x)$ exactly as in Eq.~\eqref{eq:r} and Eq.~\eqref{eq:eta_smooth}.
+valid for $2\pi x\sqrt{L^2-x^2}<\theta_L LW$ (Section~\ref{sec:width_reduction}), i.e., before the overlap band consumes the full width $W$. As in the leading-order picture of Section~\ref{sec:pressure_recursion}, $F(0)=\frac{WA_0}{L}\cdot L=WA_0$ is set entirely by the base tension $A_0$, and the exponential growth in $x$ is exactly the accumulated, capstan-type effect of Section~\ref{sec:accumulated_pressure}: each additional bit of wound-over contact multiplies the required pulling force rather than adding to it.
 
-\paragraph{What the six-component treatment changed, and what it did not.} At the leading order adopted here---$S_w^{out}\to0$ in Section~\ref{sec:smooth_relax}, and the resulting $\bar\sigma_{vv}\approx0$ closure of Section~\ref{sec:width_avg}---Eq.~\eqref{eq:F_closed} is identical in form to the closed-form law obtained from the simpler, single-sided membrane treatment. What has changed is the status of that law: $\bar\sigma_{vv}\approx0$ is now a controlled consequence of compatibility (Section~\ref{sec:compatibility}) rather than an assumption, the friction driving it is now derived from genuine boundary tractions on a resolved thickness rather than posited as a volume force, and the model now explicitly exposes a further, previously invisible effect --- the outer-only contact band's forward drag, of the same order $\mu P/r$ as the resisting term it was set to zero against --- as a concrete, quantified target for refinement, rather than an effect the simpler treatment had no way to even represent. Resolving $P_{out}$ properly, via the recursive contact-pressure chain across the wound layers flagged in Section~\ref{sec:friction_revisited}, would modify $\eta_s(x)$ (and hence the exponent of Eq.~\ref{eq:F_closed}) directly; this is the natural next step.
+%TODO: this closed form drops two effects flagged along the way as secondary but not rigorously shown to be small: the curvature-correction term of Eq.~\eqref{eq:curvature_correction} (needs the nonlocal, accumulated $\sigma_{rr}(\frac{t}{2})+\sigma_{rr}(-\frac{t}{2})$, dropped in Eq.~\ref{eq:fu_width_integrated}) and the shear-divergence term of Eq.~\eqref{eq:outofplane_integrated}. Also unaddressed: the width-edge truncation of Eq.~\eqref{eq:pressure_closed}, and, if a smooth (rather than hard) turn-on of the overlap band at $v=-\frac{W}{2}+2\pi r\sin\phi$ is later needed for numerical purposes, replacing that hard cutoff with a sigmoidal gate --- unnecessary for the closed form above, since the hard cutoff already integrates over $v$ exactly.
 
 \section{Experimental validation}
 \begin{figure}[p]
