@@ -391,3 +391,112 @@ regime that motivated the local elastic formula in the first place.
 This is the current open problem: the physics of the contact fix (9.4) is
 believed correct, but it has made the discretization measurably less
 well-behaved than before, and that trade has not yet been resolved.
+
+
+---
+
+# 10. `energy_coupled_solver.py` — the energy-coupled successor
+
+`numerical_solver.py` (everything above) is superseded by
+`energy_coupled_solver.py`.  The new physics is the bending/membrane **energy
+balance**, which supplies the energy-minimizing radius $r(x)$ and, more
+importantly, a *physical* normalization to replace the arbitrary anchor
+`sigma_uu(L,0) := 1` that §7 needed.
+
+## 10.1 What the energy closure buys, and what it does not
+
+At each $x$, minimizing $U(\rho;x)=U_{bend}+U_{mem}$ over $\rho=r/r_{nat}$
+(with $\lambda=\sqrt{\rho^2+\chi^2}$ from the helix arc length, floored at the
+jamming radius) gives the mean axial strain $\epsilon=\lambda-1$.  The ribbon's
+total elongation $L(\lambda-1)$ is then imposed as a **Dirichlet condition**,
+which is inhomogeneous — so the trivial all-zero field is no longer a solution
+and no anchor is required.
+
+It does **not** resolve $A_0$ in the analytical sense.  It fixes the *amplitude*
+of the friction field by tying it to the geometric stretch; it supplies no
+source term to the friction PDEs themselves, which remain homogeneous.
+
+## 10.2 Restructures relative to §1–§8
+
+| old | new | why |
+|---|---|---|
+| stress unknowns $\bar\sigma_{uu},\bar\sigma_{uv},\bar\sigma_{vv}$ + Beltrami–Michell | displacement unknowns $a,b$ | compatibility becomes identical, killing the over-determination and inconsistent least-squares residual of §9.5 |
+| friction enters a *differentiated* source (Eq. 3) | friction enters Navier RHS undifferentiated | removes §9.5's noise mechanism outright (nothing interpolated is differentiated) |
+| Eq. 4 transport, finite-differenced, band-interpolated (§9.2) | exact contact recursion $\sigma_{rr}^+(u,v)=\sigma_{rr}^-(u^+,v^+)$, carried as a third unknown field | no narrow-band instability; $\sigma_{rr}^+(L,\cdot)=0$ enforced geometrically |
+| least squares (`lsqr`) | square direct sparse solve | there is no longer an inconsistent system to smear |
+| per-node Python assembly | vectorized sparse matrix algebra | needed to afford $N_u\sim10^3$–$10^4$ |
+| fixed $81\times41$ grid | grid adapted per $x$ to a points-per-turn target | see §10.3 |
+
+Also fixed: the old code pinned $\bar\sigma_{uu}=0$ at the free edges
+$v=\pm W/2$.  A traction-free $v$-edge constrains only $\sigma_{vv}$ and
+$\sigma_{uv}$; pinning $\sigma_{uu}$ kills the uniform-tension field the energy
+closure exists to produce.
+
+Also noted: `eq:end_load` in the write-up, $F=W[\bar\sigma_{uu}\sin\phi+
+\bar\sigma_{uv}\cos\phi]$, is missing the thickness — it is a force per unit
+length.  Corrected to $Wt[\cdots]$.  Irrelevant before (the scale was
+arbitrary), load-bearing now.
+
+## 10.3 Resolution requirement: points per coil turn
+
+The contact partner sits $\text{shift}_u=2\pi r\cos\phi$ away in $u$, and the
+recursion is meaningless unless several grid points fit inside that distance.
+Measured: $F$ is converged to a few percent at $\gtrsim10$ points/turn and not
+converged at all below $\sim3$.  Since $\text{shift}_u$ shrinks as the coil
+tightens, the demand grows with $x$; the sweep therefore adapts $N_u$ per $x$
+(up to 7000).  Fixed-grid runs like the old $N_u=81$ are far below threshold
+everywhere — worth keeping in mind when reading the old results.
+
+## 10.4 Boundary conditions at the ends, and a corner singularity
+
+Both ends carry the prescribed axial displacement.  In $v$: $u=0$ is fully
+clamped ($b=0$), $u=L$ is left shear-free ($\sigma_{uv}=0$).  Two failure modes
+were found and avoided:
+
+* **$\sigma_{uv}=0$ at both ends** over-constrains the global $z$-balance.  It
+  forces $Wt\sin\phi\int\bar\sigma_{uu}$ to be equal at the two ends, which
+  conflicts with the friction amplification.  (The equilibrium equations are
+  written in the *local* frame, so $\iint f_u\,dA$ is not conserved — $\hat u$
+  rotates — and only the global $z$-resultant is.)
+* **$b=0$ at both ends** puts a clamped-meets-free corner at $u=L$.  Its stress
+  singularity diverges linearly in $1/du$ and contaminates $F$, which is read
+  there: measured $\sigma_{uu}$ at the corner node went $5.6\times10^4\to
+  1.1\times10^5\to2.1\times10^5$ on successive refinements while every
+  interior-of-width value was converged to under 1%.
+
+## 10.5 Blockers (open)
+
+1. **Conditioning wall.**  The friction feedback amplifies along $u$ at
+   $\lambda_+=\mu\sin2\phi\,\kappa_{uu}$, so $\lambda_+L\approx0.77\,\mu\,
+   \theta_L$ — set by $\mu$ times the *number of turns*, independent of
+   $E,t,W$.  At the write-up's own parameters ($\theta_L=200$, $\mu=0.3$) this
+   peaks at $46$ near $x/L=0.58$: a mode ratio $e^{46}\sim10^{20}$ against
+   double precision's $10^{16}$.  Measured there, $F$ came out
+   $14.5,\,41.1,\,-80.2,\,-26.3$ N on successively refined grids — sign-flipping
+   noise, not convergence.  This is very likely the root of §9.3/§9.5's
+   "astronomical range" and wild $F(x)$; it is a conditioning wall, not a
+   discretization bug.  Correct treatment in that regime is a one-sided
+   boundary-layer problem near $u=L$, not a two-point BVP.  **Not implemented.**
+2. **Parameter squeeze.**  Two constraints pull opposite ways: self-contact
+   needs $\pi r_{nat}\ll W$ (else turns separate axially near $\phi=45^\circ$
+   and friction vanishes outright — measured contact fraction collapsing to
+   0.22), while conditioning needs $\mu L/r_{nat}$ small.  At $L=200$, $W=8$
+   they can be satisfied together only with modest margin.
+3. **Grid-dependent near-null mode.**  At $r_{nat}=1.25,\mu=0.2$ (25.5 turns)
+   the coupled operator develops a spurious near-null mode at isolated $x$:
+   $|a|_{max}/\text{elongation}$ spikes to $\sim5800$ (it should be $O(1$–$100)$)
+   and $F$ sign-flips.  The same sweep at 4 points/turn is smooth, so it is a
+   discretization artifact of the recursion block, not physics.  A `health`
+   diagnostic now flags and rejects such points instead of reporting them.
+4. **The two $F$ routes do not agree** (typically 2–5×, worse at the ends).
+   Route (b) needs $dU_{elastic}/dx$, but the friction-amplified membrane energy
+   is held by a dissipative, history-dependent contact law, so it is not a
+   recoverable potential, and a rate-independent quasi-static model gives no way
+   to split recoverable from friction-locked strain energy.  The same issue
+   invalidated feeding $\Xi=\langle\epsilon^2\rangle/\langle\epsilon\rangle^2$
+   back into the $\rho$ minimization (it comes out $\sim4\times10^5$, collapses
+   $\epsilon$ to $10^{-12}$ and $F$ to $10^{-6}$ N).  Route (a) is reported.
+5. **No unilateral contact.**  $\sigma_{rr}$ is allowed to go tensile, which
+   contact cannot do; the tensile fraction is reported per frame.  A proper
+   complementarity ($\sigma_{rr}\le0$ with contact loss) is a free-boundary
+   problem and is not solved.

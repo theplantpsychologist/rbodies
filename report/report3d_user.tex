@@ -14,7 +14,7 @@
 \setstretch{1.15}
 \addbibresource{references.bib} %Import the bibliography file
 
-\title{\textbf{Quasi-static model of the chinese paper yo-yo}}
+\title{\textbf{Self-contact frictional jamming of helical ribbons}}
 \author{Brandon Wong, Ben Foster}
 \date{\today}
 
@@ -360,6 +360,7 @@ Then substituting Eqs.~\eqref{eq:bar_sigma_ur}--\eqref{eq:bar_sigma_vr} for the 
     \boxed{\frac{\partial\bar\sigma_{uu}}{\partial u} + \frac{\partial\bar\sigma_{uv}}{\partial v} - \frac{\mu \sin(2\phi)\Delta\sigma_{rr}}{t} - \frac{\mu\sin(2\phi)S_{rr}}{4r} = 0}
 \end{equation}
 Integrating the $\hat v$ direction Eq~\eqref{eq:inplane_v_full} gives a similar result:
+%TODO: verify that this is correct. is the + correct
 \begin{equation}\label{eq:inplane_v_integrated}
     \boxed{\frac{\partial\bar\sigma_{uv}}{\partial u} + \frac{\partial\bar\sigma_{vv}}{\partial v} - \frac{\mu \cos(2\phi)\Delta \sigma_{rr}}{t} + \frac{\mu\cos(2\phi)S_{rr}}{4r} = 0}
 \end{equation}
@@ -383,7 +384,6 @@ Substituting this sum into Eq.~\eqref{eq:compat_stress_raw}, the four second-der
     \end{aligned}}
 \end{equation}
 Intuitively, this is a Poisson-type equation: the total in-plane stress $\bar\sigma_{uu}+\bar\sigma_{vv}$ can't vary however it likes---it has to curve in response to how unevenly the friction forcing is distributed, the way a temperature field curves in response to a heat source. 
-% Using the leading-order relation $\Delta\sigma_{rr}\approx t[\kappa_{uu}\bar\sigma_{uu}-2\kappa_{uv}\bar\sigma_{uv}+\kappa_{vv}\bar\sigma_{vv}]$ (Section~\ref{sec:outofplane_integration}), the explicit $t$ cancels the $1/t$ in front of the $\Delta\sigma_{rr}$ term, reducing it to ordinary derivatives of $\bar\sigma_{uu},\bar\sigma_{uv},\bar\sigma_{vv}$; the $S_{rr}$ term does not reduce the same way, since $S_{rr}$ solves the separate transport equation, Eq.~\eqref{eq:S_transport}, rather than an algebraic relation. 
 Equations~\eqref{eq:inplane_u_integrated}, \eqref{eq:inplane_v_integrated}, and \eqref{eq:beltrami_michell} are now three equations for the three unknowns $\bar\sigma_{uu},\bar\sigma_{uv},\bar\sigma_{vv}$, closing the gap identified above.
 
 
@@ -396,79 +396,168 @@ Next, we integrate the $\hat r$ direction Eq~\eqref{eq:outofplane_r_full}:
 \end{align}
 Substituting Eqs.~\eqref{eq:bar_sigma_ur}--\eqref{eq:bar_sigma_vr} for $\bar\sigma_{ur},\bar\sigma_{vr}$ gives,
 \begin{equation}\label{eq:outofplane_exact}
-    \Delta \sigma_{rr} = t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big] + \frac{t\mu}{2}\left[\sin(2\phi)\frac{\partial S}{\partial u}+\cos(2\phi)\frac{\partial S}{\partial v}\right]
+    \Delta \sigma_{rr} = t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big] + \frac{t\mu}{2}\left[\sin(2\phi)\frac{\partial S_{rr}}{\partial u}+\cos(2\phi)\frac{\partial S_{rr}}{\partial v}\right]
 \end{equation}
 This is one equation in the two unknowns $S_{rr},\Delta\sigma_{rr}$ (equivalently, $\sigma_{rr}^+,\sigma_{rr}^-$); by itself it is not yet closed. We now bring in Eq~\eqref{eq:delta_sigma_rr_both} as an alternate expression for $\Delta\sigma_{rr}$ based on the recursive layer-to-layer contact relationship. Equating Eqs.~\eqref{eq:outofplane_exact} and \eqref{eq:delta_sigma_rr_both} gives:
 
 \begin{equation}
-    \left(\pi r\cos\phi - \frac{t\mu}{2}\sin(2\phi)\right)\frac{\partial S}{\partial u} - \left(\pi r\sin\phi+\frac{t\mu}{2}\cos(2\phi)\right)\frac{\partial S}{\partial v} = t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big]
+    \left(\pi r\cos\phi - \frac{t\mu}{2}\sin(2\phi)\right)\frac{\partial S_{rr}}{\partial u} - \left(\pi r\sin\phi+\frac{t\mu}{2}\cos(2\phi)\right)\frac{\partial S_{rr}}{\partial v} = t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big]
 \end{equation}
-The $t\mu$ corrections to the two coefficients are smaller than the leading $\pi r\cos\phi,\pi r\sin\phi$ terms by a factor of order $t/r$ (comparing an explicit $t$ against an explicit $r$), so at leading order they drop, leaving the closed transport equation for $S$ alone: 
+The $t\mu$ corrections to the two coefficients are smaller than the leading $\pi r\cos\phi,\pi r\sin\phi$ terms by a factor of order $t/r$ (comparing an explicit $t$ against an explicit $r$), so at leading order they drop, leaving the closed transport equation for $S_{rr}$ alone: 
 \begin{equation}\label{eq:S_transport}
-    \boxed{\pi r\cos\phi\,\frac{\partial S}{\partial u} - \pi r\sin\phi\,\frac{\partial S}{\partial v} = t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big]}
+    \boxed{\pi r\cos\phi\,\frac{\partial S_{rr}}{\partial u} - \pi r\sin\phi\,\frac{\partial S_{rr}}{\partial v} = t\big[\kappa_{uu}\sigma_{uu}-2\kappa_{uv}\sigma_{uv}+\kappa_{vv}\sigma_{vv}\big]}
 \end{equation}
 Given $\bar\sigma_{uu},\bar\sigma_{uv},\bar\sigma_{vv}$, Eq.~\eqref{eq:S_transport} determines $S_{rr}$ (a first-order transport equation, solvable along its characteristics using $\sigma_{rr}^+(L,v)=0$), and $\Delta\sigma_{rr}$ then follows algebraically from Eq.~\eqref{eq:outofplane_exact} at the same leading order, $\Delta\sigma_{rr}\approx t[\kappa_{uu}\bar\sigma_{uu}-2\kappa_{uv}\bar\sigma_{uv}+\kappa_{vv}\bar\sigma_{vv}]$. This is the self-contained 2-for-2 subsystem referred to above.
 
-
-\subsection{PDE solution}\label{sec:pde_solution}
-The system is now closed, but Eq.~\eqref{eq:beltrami_michell} is second order in $v$ while Eqs.~\eqref{eq:inplane_u_integrated}--\eqref{eq:inplane_v_integrated} are first order, and all three are coupled to the separate transport equation for $S_{rr}$ --- not a system with an obvious closed form in general $(u,v)$. We reduce the $v$-dependence using a truncated cosine expansion, motivated directly by the boundary conditions rather than by assuming any component is simply zero. The free-edge condition $\bar\sigma_{uv}=\bar\sigma_{vv}=0$ at $v=\pm\frac W2$ is satisfied identically, for every $u$, by any combination of $\cos\!\left(\frac{(2n-1)\pi v}{W}\right)$, $n=1,2,\dots$ (each vanishes at $v=\pm\frac W2$ since $\frac{(2n-1)\pi}{2}$ is an odd multiple of $\frac\pi2$); keeping only the leading ($n=1$) term, and assuming this same reflection symmetry about $v=0$ for $\bar\sigma_{uu}$,
-\begin{equation}\label{eq:mode_ansatz}
-    \bar\sigma_{uu}(u,v) \approx \bar\sigma_{uu}(u), \qquad
-    \bar\sigma_{uv}(u,v) \approx c(u)\cos\!\left(\frac{\pi v}{W}\right), \qquad
-    \bar\sigma_{vv}(u,v) \approx b(u)\cos\!\left(\frac{\pi v}{W}\right).
+\subsection{v-dependence reduction}\label{sec:v_dependence_reduction}
+Along the long edges of the ribbon, $v=\pm\frac W2$, the material is traction-free along the $\hat v$ face. This means we can enforce the following boundary conditions:
+\begin{equation}
+    \bar\sigma_{uv}\!\left(u,\pm\tfrac W2\right) = 0, \qquad \bar\sigma_{vv}\!\left(u,\pm\tfrac W2\right) = 0, \qquad \bar\sigma_{vr}\!\left(u,\pm\tfrac W2\right) = 0.
 \end{equation}
-($\bar\sigma_{uu}$ has no edge condition to satisfy, so we keep only its width-average; a first correction $\propto\cos(2\pi v/W)$ is the natural next term if more resolution is wanted.) For consistency we track $S_{rr},\Delta\sigma_{rr}$ only through their width averages $\bar S_{rr}(u):=\frac1W\int_{-W/2}^{W/2}S_{rr}\,\mathrm dv$, $\overline{\Delta\sigma_{rr}}(u)$, i.e., as approximately uniform across the width; this is an additional, explicit truncation (not derived), parallel to keeping only the leading cosine mode above.
+In particular, $\sigma_{vr}$ is directly related to $S_{rr}$ (Eq.~\eqref{eq:bar_sigma_vr}), so this boundary condition implies that $\sigma_{rr}^\pm\!\left(u,\pm\tfrac W2\right) = 0$ individually\footnote{Technically, the relationship defined by Eq.~\eqref{eq:bar_sigma_vr} breaks when $\phi=45^\circ$, but since every coefficient in the governing equations depends smoothly on $\phi$ with nothing singular at $\phi=45^\circ$, the solution itself varies continuously through that point, so the value obtained in the limit $\phi\to45^\circ$ from either side should apply there as well.} --- and hence, since $\sigma_{rr}^\pm\le0$ always (Section~\ref{sec:sign_monotonicity}), that $S_{rr},\Delta\sigma_{rr}$ both vanish at $v=\pm\frac W2$ too, since a sum of two non-positive numbers is zero only if both are.
 
-Two integrals recur below and are worth recording once: over $v\in[-\frac W2,\frac W2]$, $\int\cos(\pi v/W)\,\mathrm dv=\frac{2W}{\pi}$ and $\int\cos^2(\pi v/W)\,\mathrm dv=\frac W2$ --- note the cosine mode is \emph{not} orthogonal to a constant on this interval (only to modes of a different, matching parity), so projecting the width-uniform fields onto $\cos(\pi v/W)$ still picks up a nonzero factor $\frac1W\cdot\frac{2W}{\pi}\big/1=\frac2\pi$.
+Rather than expand $S_{rr},\Delta\sigma_{rr}$ directly, it is cleaner to first repackage the two combinations of them that actually appear in Eqs.~\eqref{eq:inplane_u_integrated}--\eqref{eq:inplane_v_integrated}:
+\begin{equation}\label{eq:PQ_def}
+    P := \frac{\Delta\sigma_{rr}}{t}+\frac{S_{rr}}{4r}, \qquad Q := \frac{\Delta\sigma_{rr}}{t}-\frac{S_{rr}}{4r},
+\end{equation}
+so that Eq.~\eqref{eq:inplane_u_integrated} reads $\frac{\partial\bar\sigma_{uu}}{\partial u}+\frac{\partial\bar\sigma_{uv}}{\partial v}=\mu\sin(2\phi)P$ and Eq.~\eqref{eq:inplane_v_integrated} reads $\frac{\partial\bar\sigma_{uv}}{\partial u}+\frac{\partial\bar\sigma_{vv}}{\partial v}=\mu\cos(2\phi)Q$. Since $P,Q$ are each a linear combination of $\Delta\sigma_{rr},S_{rr}$, both vanish at $v=\pm\frac W2$ too.
 
-\paragraph{Width-average of the $u$-equation.} Integrating Eq.~\eqref{eq:inplane_u_integrated} over $v$ and dividing by $W$: the $\partial\bar\sigma_{uv}/\partial v$ term integrates to $\bar\sigma_{uv}(u,W/2)-\bar\sigma_{uv}(u,-W/2)=0$ exactly (free edge, true for any ansatz satisfying it), leaving
-\begin{equation}\label{eq:mode_a}
-    \frac{\mathrm d\bar\sigma_{uu}}{\mathrm du} = \frac{\mu\sin(2\phi)}{t}\overline{\Delta\sigma_{rr}}(u) + \frac{\mu\sin(2\phi)}{4r}\bar S_{rr}(u).
+Take $\bar\sigma_{uu},\bar\sigma_{vv}$ even in $v$ (there is no reason for tension or normal stress to prefer one side of the centerline over the other). In Eq.~\eqref{eq:inplane_v_integrated}, $\frac{\partial\bar\sigma_{vv}}{\partial v}$ is then odd; for $\frac{\partial\bar\sigma_{uv}}{\partial u}$ to balance it, $\bar\sigma_{uv}$ itself must be odd. Checking this against Eq.~\eqref{eq:inplane_u_integrated}: with $\bar\sigma_{uv}$ odd, $\frac{\partial\bar\sigma_{uv}}{\partial v}$ is even, matching the even $\frac{\partial\bar\sigma_{uu}}{\partial u}$ --- both equations balance in parity with no contradiction. (The free-edge condition alone does not decide this: both the even family $\cos\!\left(\frac{(2n-1)\pi v}{W}\right)$ and the odd family $\sin\!\left(\frac{2n\pi v}{W}\right)$ vanish at $v=\pm\frac W2$; it is the equilibrium equations, not the boundary condition, that fix which one $\bar\sigma_{uv}$ must use.) This forces $P$ (which pairs with the even $\bar\sigma_{uu}$-equation) to be even, and $Q$ (which pairs with the odd $\bar\sigma_{uv}$-equation) to be odd. $P,Q$ inherit the vanishing at $v=\pm\frac W2$ established above, so each lands in the edge-vanishing family matching its own parity.
+
+Unlike $\bar\sigma_{uv},\bar\sigma_{vv},P,Q$, nothing forces $\bar\sigma_{uu}$ to vanish at the edges, so there is no boundary-condition argument pulling it toward $\cos(\pi v/W)$ specifically. Concretely: differentiating the leading odd mode of $\bar\sigma_{uv}$ produces $\cos(2\pi v/W)$ (frequency $\frac{2\pi}{W}$), not $\cos(\pi v/W)$ (frequency $\frac\pi W$, the frequency of $P$) --- the two frequencies genuinely do not match, so no single-mode choice for $\bar\sigma_{uu}$ makes Eq.~\eqref{eq:inplane_u_integrated} balance term-by-term across all three sources exactly. Given that, the width-average (frequency $0$, the lowest and simplest option, with no edge constraint to violate) is the most justifiable choice. 
+
+In summary, each of the five unknowns are reduced to a function of $u$ alone:
+\begin{equation}\label{eq:mode_ansatz_v2}
+    \bar\sigma_{uu}(u,v)\approx\bar\sigma_{uu}(u), \qquad
+    \bar\sigma_{uv}(u,v)\approx a(u)\sin\!\left(\frac{2\pi v}{W}\right), \qquad
+    \bar\sigma_{vv}(u,v)\approx b(u)\cos\!\left(\frac{\pi v}{W}\right), \qquad
+\end{equation}
+\begin{equation*}
+    P(u,v)\approx p(u)\cos\!\left(\frac{\pi v}{W}\right), \qquad
+    Q(u,v)\approx q(u)\sin\!\left(\frac{2\pi v}{W}\right)
+\end{equation*}
+Then, substituting these expansions into Eqs.~\eqref{eq:inplane_u_integrated}--\eqref{eq:inplane_v_integrated}, \eqref{eq:beltrami_michell}, and \eqref{eq:S_transport} (the last two rewritten through $P,Q$, using $\Delta\sigma_{rr}=\frac t2(P+Q)$, $S_{rr}=2r(P-Q)$) gives:
+
+\paragraph{Eq.~\eqref{eq:inplane_u_integrated}, in terms of $P$.}
+\begin{equation}\label{eq:inplane_u_PQ}
+    \boxed{
+    \frac{\mathrm d\bar\sigma_{uu}}{\mathrm du} + \frac{2\pi}{W}a(u)\cos\!\left(\frac{2\pi v}{W}\right) - \mu\sin(2\phi)\,p(u)\cos\!\left(\frac{\pi v}{W}\right) = 0.
+    }
 \end{equation}
 
-\paragraph{Leading cosine mode of the $v$-equation.} Multiplying Eq.~\eqref{eq:inplane_v_integrated} by $\cos(\pi v/W)$, integrating, and dividing by $W/2$: the $\partial\bar\sigma_{uv}/\partial u$ term gives $c'(u)$ directly; the $\partial\bar\sigma_{vv}/\partial v$ term gives $-b(u)\frac\pi W\sin(\pi v/W)$, which is odd in $v$ and so projects to exactly zero against the even $\cos(\pi v/W)$; the (width-uniform) friction terms pick up the $\frac2\pi$ factor above:
-\begin{equation}\label{eq:mode_b}
-    \frac{\mathrm dc}{\mathrm du} = \frac{4\mu\cos(2\phi)}{\pi t}\overline{\Delta\sigma_{rr}}(u) - \frac{\mu\cos(2\phi)}{\pi r}\bar S_{rr}(u).
+\paragraph{Eq.~\eqref{eq:inplane_v_integrated}, in terms of $Q$.}
+\begin{equation}\label{eq:inplane_v_PQ}
+    \boxed{
+    \left[\frac{\mathrm da}{\mathrm du} - \mu\cos(2\phi)\,q(u)\right]\sin\!\left(\frac{2\pi v}{W}\right) - \frac{\pi}{W}b(u)\sin\!\left(\frac{\pi v}{W}\right) = 0.
+    }
 \end{equation}
 
-\paragraph{Leading cosine mode of Beltrami--Michell.} With the ansatz Eq.~\eqref{eq:mode_ansatz} and $S_{rr},\Delta\sigma_{rr}$ width-uniform (so $\partial S_{rr}/\partial v=\partial\Delta\sigma_{rr}/\partial v=0$ under this truncation), the right side of Eq.~\eqref{eq:beltrami_michell} is a pure function of $u$; write it $\rho(u):=(1+\nu)\frac\mu t\sin(2\phi)\,\overline{\Delta\sigma_{rr}}'(u)+(1+\nu)\frac{\mu}{4r}\sin(2\phi)\,\bar S_{rr}'(u)$. The left side, $\bar\sigma_{uu}''(u)+b''(u)\cos(\pi v/W)-b(u)(\pi/W)^2\cos(\pi v/W)$, projected onto $\cos(\pi v/W)$ the same way as above (the $\bar\sigma_{uu}''(u)$ term, being width-uniform, again picks up the $\frac2\pi$ factor):
-\begin{equation}\label{eq:mode_c}
-    \frac{4}{\pi}\bar\sigma_{uu}''(u) + b''(u) - \left(\frac{\pi}{W}\right)^2b(u) = \frac{4}{\pi}\rho(u).
-\end{equation}
-(The width-average, i.e., $n=0$, projection of Eq.~\eqref{eq:beltrami_michell} is a fourth relation among the same fields; within this truncation it is not imposed separately --- the two-mode ansatz does not carry enough freedom to satisfy it as well, and enforcing it would require keeping the next cosine mode of $\bar\sigma_{uu}$.)
-
-\paragraph{The pressure subsystem.} Under the same width-uniform truncation for $S_{rr},\Delta\sigma_{rr}$, write $\bar g(u):=\kappa_{uu}\bar\sigma_{uu}(u)+\frac2\pi\big[\kappa_{vv}b(u)-2\kappa_{uv}c(u)\big]$ for the width-average of the curvature bracket in Eq.~\eqref{eq:S_transport} (again picking up the $\frac2\pi$ factor on the $b,c$ terms). Then $\overline{\Delta\sigma_{rr}}(u)\approx t\bar g(u)$, and width-averaging Eq.~\eqref{eq:S_transport} (the $\partial S_{rr}/\partial v$ term integrates to $S_{rr}(u,W/2)-S_{rr}(u,-W/2)=0$ under the width-uniform truncation) gives
-\begin{equation}\label{eq:mode_d}
-    \bar S_{rr}'(u) = \frac{t\,\bar g(u)}{\pi r\cos\phi}.
+\paragraph{Eq.~\eqref{eq:beltrami_michell}, in terms of $P,Q$.} Using $\frac\mu t\sin(2\phi)\partial_u\Delta\sigma_{rr}+\frac\mu{4r}\sin(2\phi)\partial_uS_{rr}=\mu\sin(2\phi)\partial_uP$ and $\frac\mu t\cos(2\phi)\partial_v\Delta\sigma_{rr}-\frac\mu{4r}\cos(2\phi)\partial_vS_{rr}=\mu\cos(2\phi)\partial_vQ$:
+\begin{equation}\label{eq:beltrami_PQ}
+    \boxed{
+    \frac{\mathrm d^2\bar\sigma_{uu}}{\mathrm du^2} + \left[\frac{\mathrm d^2b}{\mathrm du^2}-\left(\frac\pi W\right)^2b(u)\right]\cos\!\left(\frac{\pi v}{W}\right)
+    = (1+\nu)\mu\sin(2\phi)\frac{\mathrm dp}{\mathrm du}\cos\!\left(\frac{\pi v}{W}\right) + (1+\nu)\mu\cos(2\phi)\frac{2\pi}{W}q(u)\cos\!\left(\frac{2\pi v}{W}\right).
+    }
 \end{equation}
 
-\paragraph{The closed system.} Equations~\eqref{eq:mode_a}, \eqref{eq:mode_b}, \eqref{eq:mode_c}, \eqref{eq:mode_d}, together with $\overline{\Delta\sigma_{rr}}=t\bar g$, form a closed, linear, constant-coefficient system in the five scalar functions $\bar\sigma_{uu},b,b',c,\bar S_{rr}$ (writing Eq.~\ref{eq:mode_c} as two first-order equations via $b'$):
-\begin{equation}\label{eq:linear_system}
-    \frac{\mathrm d}{\mathrm du}\begin{pmatrix}\bar\sigma_{uu}\\ b\\ b'\\ c\\ \bar S_{rr}\end{pmatrix}
-    = \begin{pmatrix}
-    \mu\sin(2\phi)\kappa_{uu} & \frac{2\mu\sin(2\phi)}{\pi}\kappa_{vv} & 0 & -\frac{4\mu\sin(2\phi)}{\pi}\kappa_{uv} & \frac{\mu\sin(2\phi)}{4r}\\
-    0 & 0 & 1 & 0 & 0\\
-    \star & \star & 0 & \star & \star\\
-    \frac{4\mu\cos(2\phi)}{\pi}\kappa_{uu} & \frac{8\mu\cos(2\phi)}{\pi^2}\kappa_{vv} & 0 & -\frac{16\mu\cos(2\phi)}{\pi^2}\kappa_{uv} & -\frac{\mu\cos(2\phi)}{\pi r}\\
-    \frac{t\kappa_{uu}}{\pi r\cos\phi} & \frac{2t\kappa_{vv}}{\pi^2r\cos\phi} & 0 & -\frac{4t\kappa_{uv}}{\pi^2r\cos\phi} & 0
-    \end{pmatrix}
-    \begin{pmatrix}\bar\sigma_{uu}\\ b\\ b'\\ c\\ \bar S_{rr}\end{pmatrix}
+\paragraph{Eq.~\eqref{eq:S_transport}, in terms of $P,Q$.} Substituting $S_{rr}=2r(P-Q)$, splitting by parity (even part gives an equation in $P$ alone plus a $Q$-sourced correction; odd part gives $Q$ alone plus a $P$-sourced correction):
+\begin{align}
+    \text{(even)}&\qquad 2\pi r^2\cos\phi\,\frac{\mathrm dp}{\mathrm du}\cos\!\left(\frac{\pi v}{W}\right) - \frac t2p(u)\cos\!\left(\frac{\pi v}{W}\right) + \frac{4\pi^2r^2\sin\phi}{W}q(u)\cos\!\left(\frac{2\pi v}{W}\right) = 0, \label{eq:S_transport_PQ_even}\\
+    \text{(odd)}&\qquad -2\pi r^2\cos\phi\,\frac{\mathrm dq}{\mathrm du}\sin\!\left(\frac{2\pi v}{W}\right) - \frac t2q(u)\sin\!\left(\frac{2\pi v}{W}\right) + \frac{2\pi^2r^2\sin\phi}{W}p(u)\sin\!\left(\frac{\pi v}{W}\right) = 0. \label{eq:S_transport_PQ_odd}
+\end{align}
+
+
+\subsection{Solving the reduced system}\label{sec:reduced_solve}
+Collect the five amplitude functions from Eqs.~\eqref{eq:inplane_u_PQ}, \eqref{eq:inplane_v_PQ}, \eqref{eq:beltrami_PQ}, \eqref{eq:S_transport_PQ_even}--\eqref{eq:S_transport_PQ_odd} into the first-order ODEs found by projecting each onto its own mode. Because Eq.~\eqref{eq:beltrami_PQ} is second order in $b(u)$, introduce $\frac{\mathrm db}{\mathrm du}$ as an independent state so the whole system is first order. For convenience, let
+\begin{equation}\label{eq:alpha_beta_def}
+    \alpha := \frac{t}{4\pi r^2\cos\phi}, \qquad \beta := \frac{8\sin\phi}{3W\cos\phi}
 \end{equation}
-where the third row ($b''$, from Eq.~\ref{eq:mode_c} after substituting $\rho(u)$ in terms of $\bar g'(u)=\kappa_{uu}\bar\sigma_{uu}'+\frac2\pi[\kappa_{vv}b'-2\kappa_{uv}c']$ and then $\bar\sigma_{uu}',c'$ via Eqs.~\ref{eq:mode_a}--\ref{eq:mode_b}) is a longer but equally explicit linear combination of the same five entries, omitted here for space. Since $r,\phi$ (hence every $\kappa_{ij}$) are frozen at the extension $x$ under consideration, Eq.~\eqref{eq:linear_system} has constant coefficients and is exactly solvable, in principle, by its eigenvalues and eigenvectors, the same way Section~\ref{sec:closed_form}'s earlier, single-mode treatment produced a clean exponential --- but a $5\times5$ eigenvalue problem is not something to force through by hand. Boundary conditions: $\bar S_{rr}(L)=-t\bar g(L)$ and $\bar S_{rr}(0)=t\bar g(0)$ follow from $\sigma_{rr}^+=0$ at $u=L$ and $\sigma_{rr}^-=0$ at $u=0$ (no outer or inner neighbor, respectively, at the two ends) together with $\Delta\sigma_{rr}\approx t\bar g$; the end load, Eq.~\eqref{eq:end_load}, fixes the overall scale via $\bar\sigma_{uu}(L),c(L)$; a regularity condition on $b$ (e.g.\ boundedness, or $b'(0)=0$ if a symmetry argument in $u$ is wanted) supplies the fifth. That is five conditions split between $u=0$ and $u=L$ for a fifth-order system --- a genuine two-point boundary value problem, well-posed but calling for numerical or symbolic (rather than by-hand) solution from here.
+\begin{align}
+\gamma_p&:=\left[(1+\nu)-\dfrac{8}{\pi^2}\right]\mu\sin(2\phi)\,\alpha\\
+\gamma_q&:=-\left[(1+\nu)-\dfrac{8}{\pi^2}\right]\mu\sin(2\phi)\,\beta+\dfrac{8(1+\nu)\mu\cos(2\phi)}{3W}
+\end{align}
+for recurring combination of coefficients. Substituting $\frac{\mathrm d^2\bar\sigma_{uu}}{\mathrm du^2}=\frac{2\mu\sin(2\phi)}{\pi}\frac{\mathrm dp}{\mathrm du}$ (from Eq.~\ref{eq:inplane_u_PQ}) and then $\frac{\mathrm dp}{\mathrm du}=\alpha p-\beta q$ into Eq.~\eqref{eq:beltrami_PQ} gives the full system:
+\begin{equation}\label{eq:full_system_ordered}
+    \left(\begin{array}{cc|cc|c|c}
+    \alpha & -\beta & 0 & 0 & 0 & 0\\
+    \beta & -\alpha & 0 & 0 & 0 & 0\\
+    \hline
+    0 & 0 & 0 & 1 & 0 & 0\\
+    \gamma_p & \gamma_q & \left(\dfrac{\pi}{W}\right)^2 & 0 & 0 & 0\\
+    \hline
+    0 & \mu\cos(2\phi) & \dfrac{8}{3W} & 0 & 0 & 0\\
+    \hline
+    \dfrac{2\mu\sin(2\phi)}{\pi} & 0 & 0 & 0 & 0 & 0
+    \end{array}\right)
+    \begin{pmatrix}p\\q\\b\\ \dfrac{\mathrm db}{\mathrm du}\\a\\ \bar\sigma_{uu}\end{pmatrix},
+    =
+    \frac{\mathrm d}{\mathrm du}\begin{pmatrix}p\\q\\b\\ \dfrac{\mathrm db}{\mathrm du}\\a\\ \bar\sigma_{uu}\end{pmatrix}
+\end{equation}
+The block structure (marked by the dividing lines) reveals that the matrix is \emph{block lower-triangular}. $p,q$ satisfy a closed $2\times2$ system with no dependence on anything below them; $b,\frac{\mathrm db}{\mathrm du}$ are driven only by $p,q$ (plus their own block); $a$ is driven only by $b$ and $q$; $\bar\sigma_{uu}$ is driven only by $p$. None of the later blocks ever feed back upward. This means Eq.~\eqref{eq:full_system_ordered} never has to be diagonalized as a single dense $6\times6$ problem --- it solves in a cascade, each step using only the already-solved output of the previous one.
 
+\paragraph{Step 1: the $(p,q)$ block.} This is exactly the self-contained pressure subsystem noted in Section~\ref{sec:closed_form}'s opening count. Its matrix $\begin{pmatrix}\alpha&-\beta\\\beta&-\alpha\end{pmatrix}$ has trace zero and determinant $\beta^2-\alpha^2$, giving eigenvalues
+\begin{equation}\label{eq:pq_eigenvalues}
+    \lambda = \pm\sqrt{\alpha^2-\beta^2},
+\end{equation}
+real (exponential growth/decay in $u$) if $|\alpha|>|\beta|$, imaginary (oscillatory in $u$) if $|\alpha|<|\beta|$. Either way, $p(u),q(u)$ come out as fixed linear combinations of $e^{\lambda u}$ and $e^{-\lambda u}$ (with coefficients set by the eigenvectors of that $2\times2$ matrix), with the two free constants fixed by boundary data on $\sigma_{rr}^\pm$ translated into $P,Q$ at $u=L$ and $u=0$, as in Section~\ref{sec:pde_solution}.
 
-%TODO: bring in boundary conditions and solve the 2d PDE using the boxed equations from the past subsections. boundary conditions along long edges (sigma_vv = sigma_uv = 0 at v = +/- W/2) and layer pressure at outermost layer (sigma^pm = delta sigma_rr = S_rr = 0 at u = L). Don't forget the Heaviside gates (can be approximated with sigmoid) to individually clamp sigma+ or sigma- to 0 for elements without the inner/outer neighbor layer. With these governing equations and boundary conditions, can the PDE be solved? If not, can compatibility be brought in to close the system? can it then be solved without any further assumptions, if not, what assumptions would need to be made or what is missing?
+\paragraph{Step 2: the $(b,\frac{\mathrm db}{\mathrm du})$ block.} With $p(u),q(u)$ now known functions (sums of $e^{\pm\lambda u}$), this is a linear, constant-coefficient, second-order ODE for $b(u)$ with exponential forcing:
+\begin{equation}\label{eq:b_forced}
+    \frac{\mathrm d^2b}{\mathrm du^2} - \left(\frac{\pi}{W}\right)^2 b(u) = \gamma_p\,p(u) + \gamma_q\,q(u).
+\end{equation}
+Its homogeneous solution is $b_h(u)=C_1e^{\pi u/W}+C_2e^{-\pi u/W}$; its particular solution is found by the standard undetermined-coefficients guess $b_p(u)\propto e^{\pm\lambda u}$ matching the forcing, unless $\lambda=\pm\frac\pi W$ exactly (resonance), in which case the usual $u\,e^{\pm\lambda u}$ correction applies.
 
+\paragraph{Step 3: $a(u)$.} With $b(u),q(u)$ known, $\dfrac{\mathrm da}{\mathrm du}=\mu\cos(2\phi)q(u)+\dfrac{8}{3W}b(u)$ is a direct integration.
 
-\subsection{Sign and monotonicity of the contact pressure}\label{sec:sign_monotonicity}
-% don't worry about this yet, placeholder
+\paragraph{Step 4: $\bar\sigma_{uu}(u)$.} With $p(u)$ known, $\dfrac{\mathrm d\bar\sigma_{uu}}{\mathrm du}=\dfrac{2\mu\sin(2\phi)}{\pi}p(u)$ is likewise a direct integration.
 
+% \subsection{Solving for the pressure amplitudes, and the boundary condition at $u=L$}\label{sec:pq_solve}
+% The $(p,q)$ block, $\frac{\mathrm dp}{\mathrm du}=\alpha p-\beta q$, $\frac{\mathrm dq}{\mathrm du}=\beta p-\alpha q$, is homogeneous (no external forcing) --- exactly the self-contained pressure subsystem noted from the start. Solving the first equation for $q$ and substituting into the second gives a single second-order equation for $p$ alone:
+% \begin{equation}\label{eq:p_shm}
+%     \frac{\mathrm d^2p}{\mathrm du^2} = \big(\alpha^2-\beta^2\big)\,p(u).
+% \end{equation}
+% Since $\alpha=\dfrac{t}{4\pi r^2\cos\phi}\sim\dfrac tr\cdot\dfrac1r$ carries an explicit factor of the small ratio $t/r$, while $\beta=\dfrac{8\sin\phi}{3W\cos\phi}$ does not, the generic regime for a thin ribbon is $|\alpha|\ll|\beta|$, so $\alpha^2-\beta^2<0$. Writing $\omega:=\sqrt{\beta^2-\alpha^2}$, Eq.~\eqref{eq:p_shm} is the simple-harmonic-oscillator equation $\dfrac{\mathrm d^2p}{\mathrm du^2}=-\omega^2p$, and $q$ follows algebraically from the first-order relation itself, $q=\dfrac{\alpha p-\mathrm dp/\mathrm du}{\beta}$.
 
-% \section{Experimental validation}
-% \begin{figure}
-%     \centering
-%     \includegraphics[width=0.7\textwidth]{figs/instron_plot.png}
-%     \caption{Instron force-displacement data, with raw quantized data (grey), smoothed data (solid colored), and curve fit (dashed colored).}\label{fig:yoyo}
-% \end{figure}
+% \paragraph{Applying $\sigma_{rr}^+(L,v)=0$.} This is the boundary condition that must not get lost here: at $u=L$ there is no material wound further out (Section~\ref{sec:layer_layer_contact}), so $\sigma_{rr}^+(L,v)=0$ for \emph{every} $v$, not just on average. Since $\sigma_{rr}^+\approx r\big[p(u)\cos(\pi v/W)-q(u)\sin(2\pi v/W)\big]$ under the mode ansatz (dropping the $O(t/r)$ correction from $\Delta\sigma_{rr}$ relative to $S_{rr}$), and $\cos(\pi v/W),\sin(2\pi v/W)$ are independent functions of $v$, matching this to zero for all $v$ within the two-mode truncation requires $p(L)=0$ \emph{and} $q(L)=0$ simultaneously. But Eq.~\eqref{eq:p_shm} is homogeneous, and a homogeneous linear system with both components vanishing at one point has only the trivial solution --- so both conditions cannot be imposed at once without collapsing $p,q\equiv0$ everywhere. We therefore keep only the leading (even, $\cos(\pi v/W)$) part of the condition, $p(L)=0$, and accept that the truncation cannot simultaneously drive the subleading odd ($\sin(2\pi v/W)$) part to zero at that same point --- an honest limitation of stopping at two modes, not an error. (This is the same kind of residual already flagged for the sharp inner/outer contact gates below.)
+
+% With $p(L)=0$, Eq.~\eqref{eq:p_shm}'s general solution $p(u)=A\cos(\omega u)+B\sin(\omega u)$ collapses to a single sine measured from the active end:
+% \begin{equation}\label{eq:p_solution}
+%     \boxed{p(u) = A_0\sin\big[\omega(L-u)\big],}
+% \end{equation}
+% with $A_0$ the one free constant --- playing exactly the role the base-tension constant $A_0$ played in the earlier, single-mode treatment --- to be fixed by the applied force $F(x)$ below, not by any further condition at $u=0$. Correspondingly,
+% \begin{equation}\label{eq:q_solution}
+%     q(u) = \frac{A_0}{\beta}\Big\{\alpha\sin\big[\omega(L-u)\big]+\omega\cos\big[\omega(L-u)\big]\Big\},
+% \end{equation}
+% which is generically nonzero at $u=L$ (specifically $q(L)=\dfrac{A_0\omega}{\beta}$) --- the residual just described.
+
+% \subsection{Compression assumption}\label{sec:sign_monotonicity}
+% At the centerline $v=0$, the mode expansion gives simply $\sigma_{rr}^+(u,0)\approx r\,p(u)=r A_0\sin[\omega(L-u)]$ (and, to the same leading order, $\sigma_{rr}^-(u,0)\approx\sigma_{rr}^+(u,0)$, since their difference $\Delta\sigma_{rr}$ is $O(t/r)$ smaller than $S_{rr}$). For $u\in[0,L]$, the argument $\omega(L-u)$ ranges over $[0,\omega L]$; provided $\omega L\le\pi$ (i.e., the ribbon is not long enough, relative to $1/\omega$, to complete a half-oscillation --- worth checking numerically once $r(x),\phi(x)$ are substituted, but true for a wide range of parameters), $\sin[\omega(L-u)]\ge0$ throughout. Choosing $A_0<0$ then gives $\sigma_{rr}^+(u,0)\le0$ for all $u\in[0,L]$, with equality only at $u=L$: compression everywhere except the free tip, exactly as required. Monotonicity follows the same way it did before: $|\sigma_{rr}^+(u,0)|=|A_0|r\sin[\omega(L-u)]$ increases monotonically as $u$ decreases from $L$ (more layers stacked outside), reaching its largest magnitude at the base.
+
+% Off the centerline, the $q(u)\sin(2\pi v/W)$ term means $\sigma_{rr}^+(u,v)$ is no longer manifestly one-signed by this same argument --- confirming what the placeholder in this subsection anticipated: a full pointwise sign proof across the whole width needs the actual solved $p(u),q(u)$ profile, not just a structural argument, and is left as a numerical check once $\omega(x)$ is evaluated for the parameters of interest.
+
+% \paragraph{The sharp contact gates.} Separately from the $u=L$ residual above, the mode ansatz represents $S_{rr},\Delta\sigma_{rr}$ as smooth functions across the \emph{entire} width, whereas the true boundary conditions (Eqs.~\ref{eq:contact_outer}--\ref{eq:contact_inner}) switch $\sigma_{rr}^\pm$ off entirely wherever $v$ falls outside the actual overlap band ($v<-\frac W2+2\pi r\sin\phi$ for the outer contact, $v>\frac W2-2\pi r\sin\phi$ for the inner one). Two smooth modes cannot reproduce a hard cutoff at an arbitrary location within $[-\frac W2,\frac W2]$; this treatment is therefore most trustworthy deep in the regime $2\pi r\sin\phi\ll W$, where the overlap band covers nearly the whole width and the gates rarely bind, and increasingly approximate as $2\pi r\sin\phi$ approaches $W$.
+
+% \subsection{The force--displacement relation}\label{sec:force_v2}
+% The end load is $F(x)=W\big[\bar\sigma_{uu}(L)\sin\phi+\bar\sigma_{uv}(L)\cos\phi\big]$ (Section~\ref{sec:closed_form}, opening), now evaluated with $\bar\sigma_{uv}(L,v)=a(L)\sin(2\pi v/W)$. Integrating over the width, $\int_{-W/2}^{W/2}\sin(2\pi v/W)\,\mathrm dv=0$ (a full period), so the shear contribution vanishes identically:
+% \begin{equation}\label{eq:F_reduced}
+%     F(x) = W\bar\sigma_{uu}(L)\sin\phi.
+% \end{equation}
+% $\bar\sigma_{uu}(L)$ follows by integrating $\dfrac{\mathrm d\bar\sigma_{uu}}{\mathrm du}=\dfrac{2\mu\sin(2\phi)}{\pi}p(u)$ (Eq.~\ref{eq:inplane_u_PQ}, width-averaged) using Eq.~\eqref{eq:p_solution}:
+% \begin{equation}
+%     \bar\sigma_{uu}(L) = \bar\sigma_{uu}(0) + \frac{2\mu\sin(2\phi)}{\pi\omega}A_0\Big\{1-\cos(\omega L)\Big\}.
+% \end{equation}
+% The remaining constant $\bar\sigma_{uu}(0)$ and the pressure scale $A_0$ are not two independent free parameters here: $A_0$ sets the pressure (and hence the friction actually available), while $\bar\sigma_{uu}(0)$ is the tension carried at the clamped end even before any friction has acted --- physically, the two are tied together by whatever holds the base end fixed, in the same way the single constant $A_0$ carried the entire scale of the solution in the earlier, uncoupled treatment. Taking the minimal choice $\bar\sigma_{uu}(0)=0$ (no tension at the base absent any friction contribution, consistent with the earlier treatment's convention),
+% \begin{equation}\label{eq:F_closed_v2}
+%     \boxed{F(x) = \frac{2\mu W\sin\phi\sin(2\phi)}{\pi\omega}A_0\Big[1-\cos(\omega L)\Big],}
+% \end{equation}
+% with $r=r(x)=\dfrac{\sqrt{L^2-x^2}}{\theta_L}$, $\phi=\phi(x)=\sin^{-1}\!\left(\dfrac xL\right)$ (Eqs.~\ref{eq:phi}--\ref{eq:r}) substituted into $\alpha,\beta,\omega$ (Eq.~\ref{eq:alpha_beta_def} and $\omega=\sqrt{\beta^2-\alpha^2}$) to give the explicit $x$-dependence, and $A_0$ the single free constant (the base-tension analogue) fixing the overall scale of the pull.
+
+\section{Experimental validation}
+Will do some curve fitting and stuff once the final $F(x)$ form is derived. But for now here's a double exponential $F(x) = A\exp(-B x) + C\exp(-D x)$ fit to the Instron data, which fits remarkbly well.
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figs/instron_plot.png}
+    \caption{Instron force-displacement data, with raw quantized data (grey), smoothed data (solid colored), and curve fit (dashed colored).}\label{fig:yoyo}
+\end{figure}
 
 \end{document}
