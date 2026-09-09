@@ -222,3 +222,69 @@ if __name__ == "__main__":
         return len(np.where(np.sign(d[:-1]) != np.sign(d[1:]))[0])
     print("  interior stationary points in rho: " +
           ", ".join(f"chi={c}: {n_stat(c)}" for c in [0.1,0.3,0.5,0.7,0.9,0.99]))
+
+
+# ===================================================================
+def slip_rate(rho, chi):
+    """|v_slip| per unit pull, inextensible limit.  Independent of (u,v)."""
+    return 2*np.pi*np.hypot(rho, chi)/(thL*rho)
+
+
+def contact_fraction(rho, chi):
+    """Fraction of the sheet with at least one contact neighbour, from the gates
+    v <= W/2 - 2 pi r sin(phi)  and  v >= -W/2 + 2 pi r sin(phi)."""
+    off = 2*np.pi*rho*rnat*chi/np.hypot(rho, chi)
+    return max(0.0, 1.0 - max(0.0, (2*off - W))/W)
+
+
+def dissipation(rho, chi, gain=1.0):
+    """Frictional dissipation per unit pull [N].
+    D = mu |v_slip| int |sigma_rr| du dv, with |sigma_rr| ~ (1/2) Pi sigma_uu at
+    the scale the contact recursion sets and sigma_uu = gain * E * eps."""
+    lam = np.hypot(rho, chi); eps = lam - 1
+    Pi  = 2*RJ*rho/lam**2
+    return MU*slip_rate(rho, chi)*0.5*Pi*gain*E*eps*contact_fraction(rho, chi)*L*W
+
+
+MU = 0.3
+
+def figure_friction():
+    ch = np.linspace(0.05, 0.995, 300)
+    rm, em = np.array([rho_min(c) for c in ch]).T
+    tw, mb = F_terms(rm, ch); Fs = tw + mb
+    D1  = np.array([dissipation(r, c, 1.0)  for r, c in zip(rm, ch)])
+    D10 = np.array([dissipation(r, c, 10.0) for r, c in zip(rm, ch)])
+
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(9.4, 3.6))
+    ax.semilogy(ch, Fs, "k-", lw=2, label=r"static, $\mathrm{d}U/\mathrm{d}x$")
+    ax.semilogy(ch, Fs + D1, "-", color="crimson", lw=1.8,
+                label=r"quasi-static, $\mathcal{A}=1$")
+    ax.fill_between(ch, Fs + D1, Fs + D10, color="crimson", alpha=0.16,
+                    label=r"$\mathcal{A}=1\ldots10$")
+    ax.semilogy(ch, D1, ":", color="0.45", lw=1.5, label=r"$\mathcal{D}$ alone")
+    ax.set_xlabel(r"$x/L$"); ax.set_ylabel(r"$F$  [N]")
+    ax.legend(fontsize=7.2, loc="upper left")
+    ax.set_title("(a) static vs quasi-static force", fontsize=9)
+
+    bx.plot(ch, D1/Fs, "k-", lw=2, label=r"$\mathcal{D}\,/\,(\mathrm{d}U/\mathrm{d}x)$")
+    bx.axhline(1, color="0.6", lw=0.9, ls="--")
+    b2 = bx.twinx()
+    b2.plot(ch, [contact_fraction(r, c) for r, c in zip(rm, ch)], "-.",
+            color="darkgreen", lw=1.5, label="contact fraction")
+    b2.plot(ch, slip_rate(rm, ch), "--", color="royalblue", lw=1.5,
+            label=r"$|\vec v_{\rm slip}|$ per unit pull")
+    b2.set_ylabel("contact fraction  /  slip rate"); b2.grid(False)
+    bx.set_xlabel(r"$x/L$"); bx.set_ylabel(r"dissipation / stored ratio")
+    h1, l1 = bx.get_legend_handles_labels(); h2, l2 = b2.get_legend_handles_labels()
+    bx.legend(h1+h2, l1+l2, fontsize=7.2, loc="upper left")
+    bx.set_title("(b) what drives the ratio", fontsize=9)
+    fig.tight_layout(); fig.savefig(OUT + "friction_force.pdf"); plt.close(fig)
+    print("wrote friction_force.pdf")
+    print(f"\n{'x/L':>6} {'F_static':>10} {'D':>10} {'F_quasi':>10} {'ratio':>8}")
+    for c in [0.2, 0.4, 0.6, 0.8, 0.9, 0.99]:
+        i = np.argmin(np.abs(ch - c))
+        print(f"{ch[i]:6.3f} {Fs[i]:10.4f} {D1[i]:10.4f} {Fs[i]+D1[i]:10.4f} "
+              f"{D1[i]/Fs[i]:8.2f}")
+
+
+figure_friction()

@@ -243,7 +243,7 @@ u_el_0 = subs(u_el_g, P_rr, P_c);         % the honest field: P kept
 U_total = simplify(L*W*int(u_el_P, zeta, -t/2, t/2));   % P dropped
 U_withP = simplify(L*W*int(u_el_0, zeta, -t/2, t/2));   % P kept
 fprintf('\nS6  closed-form total elastic energy obtained.\n');
-% Cross-check against the report's grouping:
+% Cross-check against the reports grouping:
 %   U/(E L W t) = tau^2/(24(1-nu^2)) [ (1/rho-1)^2 + 2(1-nu)chi^2/(rho lam^2)
 %                                      + Gamma (lam-1)^2 ],  tau = t/r_nat
 rho = r*theta_L/L;  chi = x/L;  lam = sqrt(rho^2+chi^2);
