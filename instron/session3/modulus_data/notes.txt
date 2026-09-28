@@ -1,0 +1,15 @@
+Young's modulus data for the 3 different material types.
+
+red sample: t = 0.3mm, w = 2.6cm, L = 65.5cm
+
+tracing sample: t = 0.038mm, w = 2.5cm, L = 65.5cm
+
+yoyo sample: t = 0.09mm, w = 2.5cm, L = 50cm
+
+E = max force/max displacement * L/t/w0
+
+======
+
+red: 1.55 GPa
+tracing: 9.627 GPa
+yoyo: 5.33 GPa
